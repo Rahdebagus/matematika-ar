@@ -3,6 +3,9 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineVisual } from './LineVisual';
 import type { MeasurementStyle, ObjectData } from '../data/types';
 
+/** Lama transisi transparansi model, dalam detik. */
+const FADE_SECONDS = 0.25;
+
 /**
  * Membangun dan mengendalikan semua garis ukur satu objek
  * (kontrak docs/03-modules.md).
@@ -31,6 +34,9 @@ export class MeasurementController {
     depthWrite: boolean;
   }[] = [];
   private built = false;
+  /** 0 = tampilan normal, 1 = transparan penuh. */
+  private fade = 0;
+  private fadeTarget = 0;
 
   constructor(
     parent: THREE.Object3D,
@@ -103,23 +109,50 @@ export class MeasurementController {
     }
   }
 
-  /** Fade model agar garis di dalamnya terlihat. Garis tidak ikut memudar. */
+  /**
+   * Fade model agar garis di dalamnya terlihat. Garis tidak ikut memudar.
+   *
+   * Perubahannya dianimasikan oleh `update()`, bukan seketika — pergantian
+   * mendadak terbaca seperti kedipan/bug di layar HP.
+   */
   setTransparent(on: boolean): void {
+    this.fadeTarget = on ? 1 : 0;
+  }
+
+  get isTransparent(): boolean {
+    return this.fadeTarget === 1;
+  }
+
+  /** Dipanggil tiap frame oleh render loop App. */
+  update(delta: number): void {
+    if (this.fade === this.fadeTarget) return;
+
+    const step = delta / FADE_SECONDS;
+    this.fade =
+      this.fadeTarget > this.fade
+        ? Math.min(this.fadeTarget, this.fade + step)
+        : Math.max(this.fadeTarget, this.fade - step);
+
+    this.applyFade();
+  }
+
+  private applyFade(): void {
     for (const entry of this.modelMaterials) {
       const { material } = entry;
 
-      if (on) {
-        material.transparent = true;
-        // Relatif terhadap kondisi awal, supaya benda yang memang sudah
-        // setengah tembus pandang tetap terlihat lebih pudar saat ditekan.
-        material.opacity = Math.max(0.12, entry.opacity * 0.45);
-        material.depthWrite = false;
-      } else {
-        material.transparent = entry.transparent;
-        material.opacity = entry.opacity;
-        material.depthWrite = entry.depthWrite;
-      }
-      material.needsUpdate = true;
+      // Relatif terhadap kondisi awal, supaya benda yang memang sudah
+      // setengah tembus pandang tetap terlihat lebih pudar saat ditekan.
+      const faded = Math.max(0.12, entry.opacity * 0.45);
+      const opacity = entry.opacity + (faded - entry.opacity) * this.fade;
+
+      const wasTransparent = material.transparent;
+      material.opacity = opacity;
+      material.transparent = entry.transparent || this.fade > 0;
+      material.depthWrite = this.fade > 0 ? false : entry.depthWrite;
+
+      // needsUpdate hanya perlu saat mode blending berubah; menyetelnya tiap
+      // frame memaksa shader dikompilasi ulang terus-menerus.
+      if (material.transparent !== wasTransparent) material.needsUpdate = true;
     }
   }
 

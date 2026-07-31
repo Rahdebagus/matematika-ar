@@ -1,9 +1,20 @@
 import * as THREE from 'three';
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 /** Modul yang perlu dipanggil tiap frame oleh render loop App. */
 export interface Updatable {
   update(delta: number): void;
+}
+
+export interface BloomOptions {
+  strength: number;
+  radius: number;
+  /** Hanya piksel yang lebih terang dari ini yang ikut menyala. */
+  threshold: number;
 }
 
 /**
@@ -26,6 +37,9 @@ export class App {
   private readonly resizeHandlers = new Set<() => void>();
   private readonly handleResize = () => this.resize();
   private running = false;
+
+  private composer: EffectComposer | null = null;
+  private bloomPass: UnrealBloomPass | null = null;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -71,6 +85,55 @@ export class App {
     this.clock.stop();
   }
 
+  /**
+   * Nyalakan efek glow neon pada garis ukur (docs/04-tech-notes.md).
+   *
+   * Latar dijaga tetap tembus pandang: RenderPass membersihkan dengan alpha 0
+   * dan UnrealBloomPass menimpanya secara aditif, jadi feed kamera tetap
+   * terlihat di belakang objek.
+   *
+   * Bloom menambah satu render pass penuh tiap frame. Panggil dengan `null`
+   * untuk mematikannya di perangkat yang berat.
+   */
+  setBloom(options: BloomOptions | null): void {
+    if (!options) {
+      this.composer?.dispose();
+      this.composer = null;
+      this.bloomPass = null;
+      return;
+    }
+
+    const size = this.renderer.getSize(new THREE.Vector2());
+
+    if (!this.composer) {
+      this.composer = new EffectComposer(this.renderer);
+      const renderPass = new RenderPass(this.scene, this.camera);
+      renderPass.clearAlpha = 0;
+      this.composer.addPass(renderPass);
+
+      this.bloomPass = new UnrealBloomPass(
+        size,
+        options.strength,
+        options.radius,
+        options.threshold,
+      );
+      this.composer.addPass(this.bloomPass);
+      // OutputPass wajib di ujung. Tanpanya UnrealBloomPass jadi pass
+      // terakhir dan menimpa layar secara aditif, sehingga yang tampil hanya
+      // hasil blur-nya — scene tajamnya, termasuk feed kamera, ikut hilang.
+      this.composer.addPass(new OutputPass());
+      this.composer.setPixelRatio(this.renderer.getPixelRatio());
+      this.composer.setSize(size.x, size.y);
+      return;
+    }
+
+    if (this.bloomPass) {
+      this.bloomPass.strength = options.strength;
+      this.bloomPass.radius = options.radius;
+      this.bloomPass.threshold = options.threshold;
+    }
+  }
+
   addUpdatable(target: Updatable): void {
     this.updatables.add(target);
   }
@@ -95,6 +158,9 @@ export class App {
     this.updatables.clear();
     this.resizeHandlers.clear();
 
+    this.composer?.dispose();
+    this.composer = null;
+    this.bloomPass = null;
     this.renderer.dispose();
     this.renderer.domElement.remove();
     this.labelRenderer.domElement.remove();
@@ -107,7 +173,11 @@ export class App {
       target.update(delta);
     }
 
-    this.renderer.render(this.scene, this.camera);
+    if (this.composer) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
     this.labelRenderer.render(this.scene, this.camera);
   }
 
@@ -119,6 +189,7 @@ export class App {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
     this.labelRenderer.setSize(width, height);
+    this.composer?.setSize(width, height);
 
     // ARSession menimpa fov/near/far di sini agar cocok dengan feed kamera.
     for (const handler of this.resizeHandlers) {

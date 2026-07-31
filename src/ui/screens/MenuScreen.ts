@@ -3,6 +3,8 @@ export interface MenuActions {
   onMateri: () => void;
   onPanduan: () => void;
   onTentang: () => void;
+  /** @returns kondisi bisu setelah ditogel. */
+  onToggleSuara: () => boolean;
 }
 
 /**
@@ -33,7 +35,19 @@ export class MenuScreen {
       button('Tentang', '', actions.onTentang),
     );
 
-    this.element.append(title, subtitle, nav);
+    const sound = document.createElement('button');
+    sound.type = 'button';
+    sound.className = 'menu-sound';
+    sound.title = 'Suara';
+    sound.textContent = '🔊';
+    sound.setAttribute('aria-pressed', 'false');
+    sound.addEventListener('click', () => {
+      const muted = actions.onToggleSuara();
+      sound.textContent = muted ? '🔇' : '🔊';
+      sound.setAttribute('aria-pressed', String(muted));
+    });
+
+    this.element.append(sound, title, subtitle, nav);
   }
 }
 

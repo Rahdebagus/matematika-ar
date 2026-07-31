@@ -44,6 +44,12 @@ export interface PrimitiveData {
   size: Vec3; // meter
   /** < 1 membuat bentuknya tembus pandang agar garis ukur di dalamnya terlihat. */
   opacity?: number;
+  /**
+   * Sengaja gelap secara bawaan. Bentuk yang terang ikut melewati ambang
+   * bloom dan mencuci seluruh layar — padahal yang seharusnya menyala hanya
+   * garis ukurnya.
+   */
+  color?: string;
 }
 
 /**
@@ -69,6 +75,18 @@ export interface ObjectData {
   style?: Partial<MeasurementStyle>;
 }
 
+/**
+ * Efek glow neon pada garis ukur. Bisa dimatikan lewat data karena bloom
+ * menambah satu render pass penuh tiap frame — terasa di HP kelas bawah,
+ * apalagi pada model yang berat.
+ */
+export interface BloomData {
+  enabled: boolean;
+  strength: number;
+  radius: number;
+  threshold: number;
+}
+
 export interface AppData {
   targetsUrl: string;
   /**
@@ -78,6 +96,7 @@ export interface AppData {
    * titiknya.
    */
   markerWidthMeters: number;
+  bloom: BloomData;
   defaultStyle: MeasurementStyle;
   objects: ObjectData[];
 }

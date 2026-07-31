@@ -47,7 +47,7 @@ Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](mate
 - [x] **Fase 3** — Measurement: garis + label dari JSON (kubus & balok sebagai contoh)
 - [x] **Fase 4** — Overlay AR: tampilkan/sembunyikan/transparan/reset + saring kategori
 - [x] **Fase 5** — Layar & Router: menu, panduan, tentang, dialog Materi, transisi fade
-- [ ] **Fase 6** — Polish (bloom, transparansi, audio)
+- [x] **Fase 6** — Polish: bloom neon, fade transparansi, bunyi klik (musik menunggu berkas)
 - [ ] **Fase 7** — Multi-marker
 - [ ] **Fase 8** — Deploy + QR
 

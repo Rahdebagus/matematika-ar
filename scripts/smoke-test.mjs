@@ -126,6 +126,27 @@ async function buildY4M(markerPath) {
 
 const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
 
+/**
+ * Rata-rata kecerahan tampilan AR, diukur dari tangkapan layar.
+ *
+ * Membaca piksel canvas WebGL langsung tidak bisa: tanpa preserveDrawingBuffer
+ * (yang memakan performa) buffer sudah dibersihkan setelah compositing dan
+ * hasilnya selalu nol. Tangkapan layar menangkap hasil akhir halaman.
+ */
+const screenBrightness = async (page) => {
+  const buffer = await page.screenshot({
+    clip: { x: 40, y: 200, width: 200, height: 200 },
+  });
+  const image = await loadImage(buffer);
+  const canvas = createCanvas(image.width, image.height);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(image, 0, 0);
+  const { data } = ctx.getImageData(0, 0, image.width, image.height);
+  let total = 0;
+  for (let i = 0; i < data.length; i += 4) total += data[i] + data[i + 1] + data[i + 2];
+  return total / ((data.length / 4) * 3);
+};
+
 // ---------------------------------------------------------------------- test
 
 const y4m = await buildY4M(MARKER);
@@ -218,6 +239,13 @@ try {
   await waitScreen('Matematika AR');
   check(true, 'Tentang dibuka lalu kembali ke menu');
 
+  // Tombol suara: hanya kondisi togelnya yang bisa dicek dari luar.
+  await page.click('.menu-sound');
+  const muted = await page.getAttribute('.menu-sound', 'aria-pressed');
+  await page.click('.menu-sound');
+  const unmuted = await page.getAttribute('.menu-sound', 'aria-pressed');
+  check(muted === 'true' && unmuted === 'false', 'tombol suara bisa ditogel');
+
   await page.click('.menu-button:text-is("Materi")');
   await page.locator('dialog.dialog[open]').waitFor({ timeout: 5_000 });
   await page.click('.dialog-close');
@@ -303,12 +331,25 @@ try {
       `${await labels()}`,
     );
 
+    // Diukur sebelum ditekan, supaya perubahannya benar-benar terlihat.
+    const beforeFade = await screenBrightness(page);
     await press('Transparan');
     const pressed = await page.getAttribute(
       '.overlay-button[title="Transparan"]',
       'aria-pressed',
     );
     check(pressed === 'true', 'tombol Transparan menyala');
+
+    // Fade dijalankan di dalam render loop. Kalau controller lupa didaftarkan
+    // sebagai Updatable, tombolnya tetap menyala tapi tampilan tidak berubah
+    // sama sekali — dan itu hanya ketahuan dari piksel.
+    await page.waitForTimeout(500);
+    const afterFade = await screenBrightness(page);
+    check(
+      Math.abs(afterFade - beforeFade) > 1,
+      'transparansi mengubah tampilan lewat render loop',
+      `kecerahan ${beforeFade.toFixed(1)} -> ${afterFade.toFixed(1)}`,
+    );
 
     const chips = await page.locator('.overlay-chip').count();
     if (chips > 1) {

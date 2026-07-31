@@ -8,6 +8,7 @@ import { AROverlay } from './ui/AROverlay';
 import { Dialog } from './ui/Dialog';
 import { MenuScreen } from './ui/screens/MenuScreen';
 import { InfoScreen } from './ui/screens/InfoScreen';
+import { AudioManager } from './audio/AudioManager';
 import { loadAppData } from './data/loadAppData';
 
 const container = document.querySelector<HTMLDivElement>('#app');
@@ -24,6 +25,13 @@ if (!container || !arScreen || !backButton || !uiEl || !statusEl || !screensEl) 
 const overlay = new AROverlay(uiEl, statusEl);
 const dialog = new Dialog();
 const router = new Router();
+const audio = new AudioManager();
+
+// Satu listener untuk semua tombol — lebih ringkas daripada memasang
+// pemanggilan playClick() di tiap handler dan gampang terlupa.
+document.addEventListener('click', (event) => {
+  if ((event.target as HTMLElement | null)?.closest('button')) audio.playClick();
+});
 
 const menu = new MenuScreen({
   onMulaiAR: () => router.show('ar'),
@@ -31,6 +39,7 @@ const menu = new MenuScreen({
   onMateri: () => dialog.showComingSoon('Materi'),
   onPanduan: () => router.show('panduan'),
   onTentang: () => router.show('tentang'),
+  onToggleSuara: () => audio.toggleMute(),
 });
 
 const panduan = new InfoScreen(
@@ -98,6 +107,8 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
 
   const data = await loadAppData('/data/app-data.json');
 
+  app.setBloom(data.bloom.enabled ? data.bloom : null);
+
   const session = new ARSession({
     container: root,
     camera: app.camera,
@@ -152,7 +163,12 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
     try {
       await anchor.load();
       syncResolution();
-      overlay.bind(anchor.measurements);
+
+      // Transparansi dianimasikan, jadi controller ikut render loop.
+      const measurements = anchor.measurements;
+      if (measurements) app.addUpdatable(measurements);
+
+      overlay.bind(measurements);
     } catch (error) {
       overlay.setStatus(`Gagal memuat ${anchor.object.displayName}`);
       console.error(error);
@@ -194,6 +210,7 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
       models.dispose();
       overlay.dispose();
       dialog.dispose();
+      audio.dispose();
       app.dispose();
     });
   }

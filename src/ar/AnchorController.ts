@@ -89,7 +89,7 @@ export class AnchorController {
 
     this.placeholderGeometry = new THREE.BoxGeometry(width, height, depth);
     this.placeholderMaterial = new THREE.MeshStandardMaterial({
-      color: 0xdfe6ff,
+      color: new THREE.Color(primitive.color ?? '#2a3550'),
       roughness: 0.55,
       metalness: 0.05,
       transparent: opacity < 1,

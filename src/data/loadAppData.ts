@@ -1,4 +1,11 @@
-import type { AppData, MeasurementStyle, ObjectData } from './types';
+import type { AppData, BloomData, MeasurementStyle, ObjectData } from './types';
+
+const FALLBACK_BLOOM: BloomData = {
+  enabled: true,
+  strength: 0.7,
+  radius: 0.5,
+  threshold: 0.55,
+};
 
 /** Dipakai kalau `defaultStyle` di JSON tidak lengkap. */
 const FALLBACK_STYLE: MeasurementStyle = {
@@ -42,6 +49,7 @@ export async function loadAppData(url: string): Promise<AppData> {
   return {
     targetsUrl: raw.targetsUrl ?? '/targets/targets.mind',
     markerWidthMeters,
+    bloom: { ...FALLBACK_BLOOM, ...raw.bloom },
     defaultStyle,
     objects: raw.objects,
   };

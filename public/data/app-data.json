@@ -1,6 +1,12 @@
 {
   "targetsUrl": "/targets/targets.mind",
   "markerWidthMeters": 0.1,
+  "bloom": {
+    "enabled": true,
+    "strength": 0.7,
+    "radius": 0.5,
+    "threshold": 0.55
+  },
   "defaultStyle": {
     "lineColor": "#14E6FF",
     "lineWidth": 4,
