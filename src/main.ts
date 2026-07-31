@@ -3,19 +3,19 @@ import { ARSession } from './core/ARSession';
 import { MarkerRegistry } from './ar/MarkerRegistry';
 import { AnchorController } from './ar/AnchorController';
 import { ModelLoader } from './models/ModelLoader';
+import { AROverlay } from './ui/AROverlay';
 import { loadAppData } from './data/loadAppData';
 
 const container = document.querySelector<HTMLDivElement>('#app');
+const uiEl = document.querySelector<HTMLDivElement>('#ui');
 const statusEl = document.querySelector<HTMLParagraphElement>('#status');
 const startButton = document.querySelector<HTMLButtonElement>('#start');
 
-if (!container || !statusEl || !startButton) {
-  throw new Error('Elemen #app / #status / #start tidak ditemukan di index.html');
+if (!container || !uiEl || !statusEl || !startButton) {
+  throw new Error('Elemen #app / #ui / #status / #start tidak ditemukan di index.html');
 }
 
-const setStatus = (text: string) => {
-  statusEl.textContent = text;
-};
+const overlay = new AROverlay(uiEl, statusEl);
 
 async function bootstrap(
   root: HTMLDivElement,
@@ -42,10 +42,14 @@ async function bootstrap(
       const anchor = anchors.get(targetIndex);
       if (!anchor) return;
 
-      setStatus(`${anchor.object.displayName} terdeteksi`);
+      overlay.setStatus(`${anchor.object.displayName} terdeteksi`);
       void showAnchor(anchor);
     },
-    onLost: () => setStatus('Arahkan kamera ke kartu penanda'),
+    onLost: () => {
+      // Tombol dimatikan supaya tidak ada aksi tanpa objek aktif.
+      overlay.bind(null);
+      overlay.setStatus('Arahkan kamera ke kartu penanda');
+    },
   });
 
   for (const object of data.objects) {
@@ -76,8 +80,9 @@ async function bootstrap(
     try {
       await anchor.load();
       syncResolution();
+      overlay.bind(anchor.measurements);
     } catch (error) {
-      setStatus(`Gagal memuat ${anchor.object.displayName}`);
+      overlay.setStatus(`Gagal memuat ${anchor.object.displayName}`);
       console.error(error);
     }
   }
@@ -89,15 +94,15 @@ async function bootstrap(
 
   button.addEventListener('click', async () => {
     button.disabled = true;
-    setStatus('Menyalakan kamera...');
+    overlay.setStatus('Menyalakan kamera...');
 
     try {
       await session.start();
       button.hidden = true;
-      setStatus('Arahkan kamera ke kartu penanda');
+      overlay.setStatus('Arahkan kamera ke kartu penanda');
     } catch (error) {
       button.disabled = false;
-      setStatus(error instanceof Error ? error.message : 'Gagal memulai AR');
+      overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai AR');
       console.error(error);
     }
   });
@@ -109,6 +114,7 @@ async function bootstrap(
       for (const anchor of anchors.values()) anchor.dispose();
       registry.dispose();
       models.dispose();
+      overlay.dispose();
       app.dispose();
     });
   }
@@ -116,6 +122,6 @@ async function bootstrap(
 
 bootstrap(container, startButton).catch((error: unknown) => {
   startButton.disabled = true;
-  setStatus(error instanceof Error ? error.message : 'Gagal memulai aplikasi');
+  overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai aplikasi');
   console.error(error);
 });

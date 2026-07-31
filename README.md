@@ -45,7 +45,7 @@ Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](mate
 - [x] **Fase 1** — Kamera AR: MindAR menyala, 4 marker terlacak, kubus di anchor
 - [x] **Fase 2** — `ModelLoader` (.glb di atas marker) — baru Objek 4 yang punya model
 - [x] **Fase 3** — Measurement: garis + label dari JSON (kubus & balok sebagai contoh)
-- [ ] **Fase 4** — Overlay AR
+- [x] **Fase 4** — Overlay AR: tampilkan/sembunyikan/transparan/reset + saring kategori
 - [ ] **Fase 5** — Layar & Router
 - [ ] **Fase 6** — Polish (bloom, transparansi, audio)
 - [ ] **Fase 7** — Multi-marker

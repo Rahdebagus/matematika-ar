@@ -46,6 +46,13 @@ const EXPECT_DETECT = expected.displayName;
 const EXPECT_LABELS = expected.measurements.filter(
   (m) => m.visibleOnStart ?? true,
 ).length;
+const EXPECT_TOTAL = expected.measurements.length;
+/** Jumlah label per kategori — angka harapan untuk tombol saring. */
+const EXPECT_BY_CATEGORY = {};
+for (const m of expected.measurements) {
+  const key = m.category ?? 'default';
+  EXPECT_BY_CATEGORY[key] = (EXPECT_BY_CATEGORY[key] ?? 0) + 1;
+}
 
 // ---------------------------------------------------------------- kamera palsu
 
@@ -226,6 +233,53 @@ try {
       `label ukur ter-render (harap ${EXPECT_LABELS})`,
       `${labels} label`,
     );
+  }
+
+  // 4b. Overlay AR: tombolnya benar-benar ditekan, akibatnya diperiksa.
+  if (detected && EXPECT_TOTAL > 0) {
+    const labels = () => page.locator('.measurement-label:visible').count();
+    const press = async (title) => {
+      await page.click(`.overlay-button[title="${title}"]`);
+      await page.waitForTimeout(150);
+    };
+
+    await press('Sembunyikan');
+    check((await labels()) === 0, 'tombol Sembunyikan mengosongkan label', `${await labels()}`);
+
+    await press('Tampilkan');
+    check(
+      (await labels()) === EXPECT_TOTAL,
+      `tombol Tampilkan memunculkan semua (harap ${EXPECT_TOTAL})`,
+      `${await labels()}`,
+    );
+
+    await press('Reset');
+    check(
+      (await labels()) === EXPECT_LABELS,
+      `tombol Reset kembali ke kondisi awal (harap ${EXPECT_LABELS})`,
+      `${await labels()}`,
+    );
+
+    await press('Transparan');
+    const pressed = await page.getAttribute(
+      '.overlay-button[title="Transparan"]',
+      'aria-pressed',
+    );
+    check(pressed === 'true', 'tombol Transparan menyala');
+
+    const chips = await page.locator('.overlay-chip').count();
+    if (chips > 1) {
+      const first = page.locator('.overlay-chip').first();
+      const name = await first.textContent();
+      await first.click();
+      await page.waitForTimeout(150);
+      check(
+        (await labels()) === EXPECT_BY_CATEGORY[name],
+        `saring kategori "${name}" (harap ${EXPECT_BY_CATEGORY[name]})`,
+        `${await labels()}`,
+      );
+      await press('Reset');
+    }
   }
 
   // Tangkapan layar: satu-satunya cara melihat hasil render tanpa HP.

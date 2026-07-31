@@ -104,6 +104,90 @@ body {
   cursor: default;
 }
 
+/* ---------------------------------------------------------------- overlay AR */
+
+.overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.overlay-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.overlay-chip {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 999px;
+  background: rgb(6 12 30 / 0.72);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.overlay-chip.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.overlay-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.overlay-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.25rem;
+  border: 0;
+  /* Navy pekat, mengikuti tile tombol dari pack UI versi Unity. */
+  border-radius: 0.9rem;
+  background: #0b2149;
+  color: #e8ecff;
+  font: inherit;
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.overlay-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #2f95f5;
+}
+
+.overlay-button.is-active {
+  background: var(--accent);
+}
+
+.overlay-button.is-active svg {
+  color: #fff;
+}
+
+.overlay-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 #start[hidden] {
   display: none;
 }

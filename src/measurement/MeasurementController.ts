@@ -18,8 +18,18 @@ export class MeasurementController {
   private readonly model: THREE.Object3D | null;
   private readonly material: LineMaterial;
   private readonly visuals: LineVisual[] = [];
-  /** Material model yang sudah di-clone, agar transparansi tidak menular. */
-  private readonly modelMaterials: THREE.Material[] = [];
+  /**
+   * Material model yang sudah di-clone (agar transparansi tidak menular),
+   * beserta kondisi awalnya. Nilai awal harus disimpan: bentuk contoh sudah
+   * setengah tembus pandang dari JSON, jadi mematikan mode transparan tidak
+   * boleh memaksa opacity kembali ke 1.
+   */
+  private readonly modelMaterials: {
+    material: THREE.Material;
+    opacity: number;
+    transparent: boolean;
+    depthWrite: boolean;
+  }[] = [];
   private built = false;
 
   constructor(
@@ -95,10 +105,20 @@ export class MeasurementController {
 
   /** Fade model agar garis di dalamnya terlihat. Garis tidak ikut memudar. */
   setTransparent(on: boolean): void {
-    for (const material of this.modelMaterials) {
-      material.transparent = on;
-      material.opacity = on ? 0.35 : 1;
-      material.depthWrite = !on;
+    for (const entry of this.modelMaterials) {
+      const { material } = entry;
+
+      if (on) {
+        material.transparent = true;
+        // Relatif terhadap kondisi awal, supaya benda yang memang sudah
+        // setengah tembus pandang tetap terlihat lebih pudar saat ditekan.
+        material.opacity = Math.max(0.12, entry.opacity * 0.45);
+        material.depthWrite = false;
+      } else {
+        material.transparent = entry.transparent;
+        material.opacity = entry.opacity;
+        material.depthWrite = entry.depthWrite;
+      }
       material.needsUpdate = true;
     }
   }
@@ -115,7 +135,7 @@ export class MeasurementController {
   dispose(): void {
     for (const visual of this.visuals) visual.dispose();
     this.visuals.length = 0;
-    for (const material of this.modelMaterials) material.dispose();
+    for (const entry of this.modelMaterials) entry.material.dispose();
     this.modelMaterials.length = 0;
     this.material.dispose();
     this.root.removeFromParent();
@@ -127,20 +147,23 @@ export class MeasurementController {
    * objek lain yang memakai model sama.
    */
   private isolateModelMaterials(): void {
+    const isolate = (material: THREE.Material): THREE.Material => {
+      const clone = material.clone();
+      this.modelMaterials.push({
+        material: clone,
+        opacity: clone.opacity,
+        transparent: clone.transparent,
+        depthWrite: clone.depthWrite,
+      });
+      return clone;
+    };
+
     this.model?.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
 
-      if (Array.isArray(child.material)) {
-        child.material = child.material.map((material: THREE.Material) => {
-          const clone = material.clone();
-          this.modelMaterials.push(clone);
-          return clone;
-        });
-      } else {
-        const clone = (child.material as THREE.Material).clone();
-        this.modelMaterials.push(clone);
-        child.material = clone;
-      }
+      child.material = Array.isArray(child.material)
+        ? child.material.map(isolate)
+        : isolate(child.material as THREE.Material);
     });
   }
 }
