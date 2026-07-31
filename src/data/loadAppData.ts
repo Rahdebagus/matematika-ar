@@ -34,8 +34,14 @@ export async function loadAppData(url: string): Promise<AppData> {
 
   raw.objects.forEach(validateObject);
 
+  const markerWidthMeters = raw.markerWidthMeters ?? 0.1;
+  if (!(markerWidthMeters > 0)) {
+    throw new Error(`${url}: "markerWidthMeters" harus lebih besar dari 0`);
+  }
+
   return {
     targetsUrl: raw.targetsUrl ?? '/targets/targets.mind',
+    markerWidthMeters,
     defaultStyle,
     objects: raw.objects,
   };

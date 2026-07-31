@@ -42,7 +42,18 @@ export interface MeasurementStyle {
 export interface PrimitiveData {
   type: 'box';
   size: Vec3; // meter
+  /** < 1 membuat bentuknya tembus pandang agar garis ukur di dalamnya terlihat. */
+  opacity?: number;
 }
+
+/**
+ * Cara memetakan ukuran model ke ruang anchor.
+ * - `real`: skala fisik sebenarnya, memakai `markerWidthMeters` sebagai acuan.
+ *   Kubus 15 cm otomatis tampil 1,5x kubus 10 cm — penting untuk pelajaran ukur.
+ * - `marker-width`: tapak model dipaskan ke lebar kartu. Untuk model yang
+ *   ukuran aslinya tidak diketahui atau terlalu besar.
+ */
+export type FitMode = 'real' | 'marker-width';
 
 export interface ObjectData {
   id: string;
@@ -51,7 +62,8 @@ export interface ObjectData {
   modelUrl?: string | null;
   primitive?: PrimitiveData;
   targetIndex: number;
-  scale?: number;
+  fit?: FitMode; // default "real"
+  scale?: number; // pengali tambahan
   points: PointData[];
   measurements: MeasurementDef[];
   style?: Partial<MeasurementStyle>;
@@ -59,6 +71,13 @@ export interface ObjectData {
 
 export interface AppData {
   targetsUrl: string;
+  /**
+   * Lebar kartu penanda tercetak, dalam meter. Ini yang mengubah satuan
+   * anchor MindAR (1 unit = lebar kartu) menjadi ukuran dunia nyata.
+   * Kalau kartu dicetak dengan ukuran lain, ubah angka ini — bukan koordinat
+   * titiknya.
+   */
+  markerWidthMeters: number;
   defaultStyle: MeasurementStyle;
   objects: ObjectData[];
 }

@@ -7,6 +7,7 @@
     "dev": "vite --host",
     "build": "npm run check:data && tsc && vite build",
     "check:data": "node scripts/check-measurements.mjs",
+    "test:smoke": "node scripts/smoke-test.mjs",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
     "compile:targets": "node scripts/compile-targets.mjs",
@@ -28,6 +29,7 @@
     "@napi-rs/canvas": "^1.0.3",
     "@types/three": "^0.185.1",
     "draco3dgltf": "^1.5.7",
+    "playwright-core": "^1.62.1",
     "sharp": "^0.35.3",
     "typescript": "^7.0.2",
     "vite": "^8.2.0"

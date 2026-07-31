@@ -56,6 +56,7 @@ async function bootstrap(
         object,
         data.defaultStyle,
         models,
+        data.markerWidthMeters,
       ),
     );
   }

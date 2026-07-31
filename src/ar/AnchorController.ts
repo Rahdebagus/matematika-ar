@@ -23,16 +23,20 @@ export class AnchorController {
   private placeholderGeometry: THREE.BufferGeometry | null = null;
   private placeholderMaterial: THREE.Material | null = null;
 
+  private readonly markerWidthMeters: number;
+
   constructor(
     group: THREE.Group,
     object: ObjectData,
     style: MeasurementStyle,
     models: ModelLoader,
+    markerWidthMeters: number,
   ) {
     this.group = group;
     this.object = object;
     this.style = style;
     this.models = models;
+    this.markerWidthMeters = markerWidthMeters;
   }
 
   get measurements(): MeasurementController | null {
@@ -58,7 +62,11 @@ export class AnchorController {
 
   private async doLoad(): Promise<void> {
     const model = await this.buildModel();
-    const { holder, content } = fitToMarker(model, 1);
+    const { holder, content } = fitToMarker(model, {
+      markerWidthMeters: this.markerWidthMeters,
+      mode: this.object.fit,
+      scale: this.object.scale,
+    });
     this.group.add(holder);
 
     const style: MeasurementStyle = { ...this.style, ...this.object.style };
@@ -77,11 +85,19 @@ export class AnchorController {
     }
 
     const [width, height, depth] = primitive.size;
+    const opacity = primitive.opacity ?? 1;
+
     this.placeholderGeometry = new THREE.BoxGeometry(width, height, depth);
     this.placeholderMaterial = new THREE.MeshStandardMaterial({
       color: 0xdfe6ff,
       roughness: 0.55,
       metalness: 0.05,
+      transparent: opacity < 1,
+      opacity,
+      // Tanpa ini sisi depan menutupi garis ukur di rusuk belakang, padahal
+      // justru garis itulah inti pelajarannya.
+      depthWrite: opacity >= 1,
+      side: opacity < 1 ? THREE.DoubleSide : THREE.FrontSide,
     });
 
     const mesh = new THREE.Mesh(this.placeholderGeometry, this.placeholderMaterial);

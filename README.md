@@ -19,6 +19,10 @@ npm run preview    # cek hasil build
 npm run typecheck  # tsc --noEmit
 npm run check:data # nilai label vs jarak titik di app-data.json (ikut jalan saat build)
 
+# Uji asap end-to-end: Chrome sungguhan + kamera palsu yang "melihat" kartu.
+# Perlu `npm run build` dulu. SMOKE_SHOT=<file.png> untuk menyimpan tangkapan layar.
+npm run test:smoke -- public/markers/object-1.png
+
 # Kompilasi ulang kartu penanda -> public/targets/targets.mind
 # Jalankan hanya kalau gambar di public/markers/ berubah.
 npm run compile:targets

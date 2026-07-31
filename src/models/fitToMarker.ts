@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { FitMode } from '../data/types';
 
 export interface MarkerFit {
   /** Ditempel ke anchor marker. Membawa rotasi + skala. */
@@ -11,6 +12,14 @@ export interface MarkerFit {
   content: THREE.Group;
 }
 
+export interface FitOptions {
+  /** Lebar kartu penanda tercetak, dalam meter. */
+  markerWidthMeters: number;
+  mode?: FitMode;
+  /** Pengali tambahan setelah skala dasar dihitung. */
+  scale?: number;
+}
+
 /**
  * Menyesuaikan objek ke ruang anchor marker.
  *
@@ -20,11 +29,14 @@ export interface MarkerFit {
  *
  * `holder` memutar +90 derajat pada X (Y model -> Z anchor) lalu menskalakan.
  * `content` menggeser di ruang model — pergeseran ini terjadi SEBELUM rotasi
- * dan skala, jadi koordinat titik dari JSON tetap apa adanya.
+ * dan skala, jadi koordinat titik dari JSON dipakai apa adanya.
  *
- * @param widthFraction 1 = tapak objek selebar kartu penanda.
+ * Mode `real` (default) memakai skala fisik sebenarnya, sehingga benda 15 cm
+ * benar-benar tampil satu setengah kali benda 10 cm. Mode `marker-width`
+ * memaksa tapak objek selebar kartu, dipakai kalau ukuran asli model tidak
+ * diketahui.
  */
-export function fitToMarker(model: THREE.Object3D, widthFraction = 1): MarkerFit {
+export function fitToMarker(model: THREE.Object3D, options: FitOptions): MarkerFit {
   const holder = new THREE.Group();
   const content = new THREE.Group();
 
@@ -38,9 +50,18 @@ export function fitToMarker(model: THREE.Object3D, widthFraction = 1): MarkerFit
 
   // Tapak = bidang XZ pada model Y-up.
   const footprint = Math.max(size.x, size.z);
+  const mode = options.mode ?? 'real';
+
+  let base: number;
+  if (mode === 'marker-width') {
+    base = footprint > 0 ? 1 / footprint : 1;
+  } else {
+    // 1 unit anchor = lebar kartu, jadi meter -> unit = 1 / lebarKartu.
+    base = 1 / options.markerWidthMeters;
+  }
 
   holder.rotation.x = Math.PI / 2;
-  holder.scale.setScalar(footprint > 0 ? widthFraction / footprint : 1);
+  holder.scale.setScalar(base * (options.scale ?? 1));
 
   // Pusatkan XZ, dudukkan alas di Y = 0.
   content.position.set(-center.x, -box.min.y, -center.z);
