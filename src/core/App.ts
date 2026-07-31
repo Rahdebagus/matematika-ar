@@ -20,30 +20,27 @@ export class App {
   private readonly container: HTMLElement;
   private readonly clock = new THREE.Clock();
   private readonly updatables = new Set<Updatable>();
+  private readonly resizeHandlers = new Set<() => void>();
   private readonly handleResize = () => this.resize();
   private running = false;
-
-  /** Objek uji Fase 0. Diganti model di atas marker pada Fase 1–2. */
-  private cube: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial> | null = null;
 
   constructor(container: HTMLElement) {
     this.container = container;
 
     this.scene = new THREE.Scene();
 
-    // Semua posisi dalam meter, jadi near/far dibuat kecil.
+    // Kamera tetap di origin: pose ditentukan matriks anchor dari ARSession,
+    // dan fov/near/far di-override agar cocok dengan feed kamera.
     this.camera = new THREE.PerspectiveCamera(60, 1, 0.01, 100);
-    this.camera.position.set(0, 0.25, 0.7);
-    this.camera.lookAt(0, 0, 0);
 
-    // alpha: true — nanti feed kamera terlihat di belakang canvas (Fase 1).
+    // alpha: true — feed kamera terlihat di belakang canvas.
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     // Batasi pixel ratio demi performa HP (docs/04-tech-notes.md).
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setClearColor(0x000000, 0);
     this.container.appendChild(this.renderer.domElement);
 
     this.addLights();
-    this.addTestCube();
     this.resize();
 
     window.addEventListener('resize', this.handleResize);
@@ -73,18 +70,21 @@ export class App {
     this.updatables.delete(target);
   }
 
+  /** Dipanggil setelah renderer/kamera disesuaikan — dipakai ARSession. */
+  addResizeHandler(handler: () => void): void {
+    this.resizeHandlers.add(handler);
+  }
+
+  removeResizeHandler(handler: () => void): void {
+    this.resizeHandlers.delete(handler);
+  }
+
   /** Lepas semua resource Three.js dan listener (docs/08-conventions.md). */
   dispose(): void {
     this.stop();
     window.removeEventListener('resize', this.handleResize);
     this.updatables.clear();
-
-    if (this.cube) {
-      this.cube.geometry.dispose();
-      this.cube.material.dispose();
-      this.scene.remove(this.cube);
-      this.cube = null;
-    }
+    this.resizeHandlers.clear();
 
     this.renderer.dispose();
     this.renderer.domElement.remove();
@@ -92,11 +92,6 @@ export class App {
 
   private tick(): void {
     const delta = this.clock.getDelta();
-
-    if (this.cube) {
-      this.cube.rotation.x += delta * 0.6;
-      this.cube.rotation.y += delta * 0.9;
-    }
 
     for (const target of this.updatables) {
       target.update(delta);
@@ -112,6 +107,11 @@ export class App {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
+
+    // ARSession menimpa fov/near/far di sini agar cocok dengan feed kamera.
+    for (const handler of this.resizeHandlers) {
+      handler();
+    }
   }
 
   private addLights(): void {
@@ -120,18 +120,5 @@ export class App {
     const sun = new THREE.DirectionalLight(0xffffff, 1.5);
     sun.position.set(1, 2, 1);
     this.scene.add(sun);
-  }
-
-  private addTestCube(): void {
-    // 10 cm — seukuran objek yang nanti berdiri di atas kartu penanda.
-    const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-    const material = new THREE.MeshStandardMaterial({
-      color: 0x4f8cff,
-      roughness: 0.35,
-      metalness: 0.1,
-    });
-
-    this.cube = new THREE.Mesh(geometry, material);
-    this.scene.add(this.cube);
   }
 }

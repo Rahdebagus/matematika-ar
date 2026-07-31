@@ -7,12 +7,15 @@
     "dev": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview --host",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "compile:targets": "node scripts/compile-targets.mjs"
   },
   "dependencies": {
+    "mind-ar": "^1.2.5",
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.3",
     "@types/three": "^0.185.1",
     "typescript": "^7.0.2",
     "vite": "^8.2.0"

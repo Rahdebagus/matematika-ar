@@ -1,6 +1,7 @@
 :root {
   --bg: #0b1020;
   --fg: #e8ecff;
+  --accent: #4f8cff;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color-scheme: dark;
 }
@@ -27,12 +28,59 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
-/* Canvas WebGL mengisi penuh container.
-   Nanti CSS2DRenderer ditumpuk di atasnya dengan position: absolute. */
+/* Video feed disisipkan ARSession dengan z-index 0. Canvas 3D di atasnya. */
 #app > canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
+}
+
+#ui {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+#status {
+  margin: 0;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.55);
+  font-size: 0.9rem;
+  line-height: 1.35;
+  backdrop-filter: blur(4px);
+}
+
+#start {
+  padding: 0.85rem 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  /* Tombol harus bisa ditekan walau container pakai touch-action: none. */
+  touch-action: manipulation;
+}
+
+#start:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#start[hidden] {
+  display: none;
 }

@@ -11,8 +11,13 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
-    <!-- Semua canvas (WebGL, dan nanti CSS2D untuk label) dipasang di sini. -->
-    <div id="app"></div>
+    <!-- Urutan tumpukan: video (z0) < canvas WebGL (z1) < UI (z2). -->
+    <div id="app">
+      <div id="ui">
+        <p id="status">Siapkan kartu penanda, lalu tekan tombol di bawah.</p>
+        <button id="start" type="button">Mulai AR</button>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
