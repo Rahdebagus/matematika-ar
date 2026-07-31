@@ -53,7 +53,7 @@ const panduan = new InfoScreen(
         'Cetak salah satu kartu penanda di bawah, atau tampilkan di layar lain.',
         'Buka menu utama lalu tekan "Mulai AR" dan izinkan akses kamera.',
         'Arahkan kamera ke kartu sampai objek 3D muncul.',
-        'Geser satu jari di layar untuk memutar objek, dan cubit dua jari untuk memperbesar atau memperkecil.',
+        'Geser satu jari untuk memutar objek bebas ke segala arah: mendatar untuk memutar, tegak untuk memiringkan. Cubit dua jari untuk memperbesar atau memperkecil.',
         'Pakai tombol di bawah layar untuk menampilkan, menyembunyikan, atau membuat objek transparan.',
         'Tekan nama kategori untuk memilih ukuran yang ditampilkan.',
         'Tombol Reset mengembalikan putaran, ukuran, dan tampilan garis ke kondisi awal.',
@@ -125,7 +125,7 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
 
   // Dipasang di canvas, bukan container: sentuhan pada tombol overlay
   // tidak boleh ikut memutar objek.
-  const transform = new ObjectTransform(app.renderer.domElement);
+  const transform = new ObjectTransform(app.renderer.domElement, app.camera);
   overlay.setResetHook(() => transform.reset());
 
   const registry = new MarkerRegistry(app.scene, {

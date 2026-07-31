@@ -435,19 +435,65 @@ try {
     await page.waitForTimeout(350);
     const atRest = await labelPositions(page);
 
-    await page.mouse.move(240, 400);
-    await page.mouse.down();
-    for (let x = 240; x <= 400; x += 16) {
-      await page.mouse.move(x, 400);
-    }
-    await page.mouse.up();
-    await page.waitForTimeout(200);
-    const rotated = await labelPositions(page);
+    /** Geser satu jari dari (x,y) sejauh (dx,dy). */
+    const drag = async (x, y, dx, dy, steps = 10) => {
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      for (let i = 1; i <= steps; i++) {
+        await page.mouse.move(x + (dx * i) / steps, y + (dy * i) / steps);
+      }
+      await page.mouse.up();
+      await page.waitForTimeout(200);
+    };
+
+    await drag(240, 400, 160, 0);
+    const rotatedX = await labelPositions(page);
     check(
-      maxShift(atRest, rotated) > 10,
-      'geser satu jari memutar objek',
-      `label bergeser ${maxShift(atRest, rotated)} px`,
+      maxShift(atRest, rotatedX) > 10,
+      'geser mendatar memutar objek',
+      `label bergeser ${maxShift(atRest, rotatedX)} px`,
     );
+
+    await press('Reset');
+    await page.waitForTimeout(350);
+    await drag(240, 400, 0, 160);
+    const rotatedY = await labelPositions(page);
+    check(
+      maxShift(atRest, rotatedY) > 10,
+      'geser tegak memiringkan objek',
+      `label bergeser ${maxShift(atRest, rotatedY)} px`,
+    );
+
+    if (process.env.SMOKE_SHOT) {
+      await page.screenshot({
+        path: process.env.SMOKE_SHOT.replace(/\.png$/, '-dimiringkan.png'),
+      });
+    }
+
+    // Sumbu mendatar dan tegak harus menghasilkan orientasi yang berbeda —
+    // kalau sama, berarti geseran tegaknya diam-diam tidak berfungsi.
+    check(
+      maxShift(rotatedX, rotatedY) > 10,
+      'kedua sumbu putar saling bebas',
+      `beda ${maxShift(rotatedX, rotatedY)} px`,
+    );
+
+    // Putaran penuh 360 derajat harus kembali ke tampilan semula.
+    await press('Reset');
+    await page.waitForTimeout(350);
+    const fullTurn = Math.round((2 * Math.PI) / 0.008); // sensitivitas rad/px
+    await drag(60, 400, fullTurn, 0, 40);
+    const turned = await labelPositions(page);
+    check(
+      maxShift(atRest, turned) <= 6,
+      'putaran 360 derajat kembali ke tampilan semula',
+      `sisa selisih ${maxShift(atRest, turned)} px`,
+    );
+
+    await press('Reset');
+    await page.waitForTimeout(350);
+    await drag(240, 400, 160, 0);
+    const rotated = await labelPositions(page);
 
     if (process.env.SMOKE_SHOT) {
       await page.screenshot({

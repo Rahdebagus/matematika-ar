@@ -41,10 +41,15 @@ npm run optimize:model -- "<sumber.glb>" public/models/<nama>.glb
 
 | Gestur | Aksi |
 |---|---|
-| Geser satu jari | Putar objek pada sumbu tegaknya |
+| Geser satu jari mendatar | Putar objek 360°, tanpa batas |
+| Geser satu jari tegak | Miringkan objek 360°, tanpa batas |
 | Cubit dua jari | Perbesar / perkecil (0,35x – 3x) |
 | Roda tetikus | Perbesar / perkecil (untuk uji di laptop) |
 | Tombol Reset | Kembalikan putaran, ukuran, transparansi, dan tampilan garis |
+
+Putaran memakai **sumbu layar**, bukan sumbu tetap objek: arah putar selalu
+mengikuti arah jari berapa pun kemiringan kartu terhadap kamera. Rotasinya
+ditumpuk sebagai quaternion sehingga bisa berputar terus tanpa terkunci.
 
 Gestur dipasang di canvas 3D, bukan di container, supaya sentuhan pada tombol
 overlay tidak ikut memutar objek.

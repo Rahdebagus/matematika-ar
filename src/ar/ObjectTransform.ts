@@ -8,9 +8,18 @@ const ROTATE_SENSITIVITY = 0.008;
 /**
  * Gestur untuk memutar dan memperbesar objek di atas marker.
  *
- * - satu jari digeser mendatar : putar pada sumbu tegak objek
- * - dua jari dicubit           : perbesar / perkecil
- * - roda tetikus               : perbesar / perkecil (untuk uji di laptop)
+ * - satu jari digeser : putar bebas 360 derajat, mendatar maupun tegak
+ * - dua jari dicubit  : perbesar / perkecil
+ * - roda tetikus      : perbesar / perkecil (untuk uji di laptop)
+ *
+ * Putaran memakai sumbu **layar**, bukan sumbu tetap objek: geser mendatar
+ * memutar pada sumbu tegak layar, geser tegak memiringkan pada sumbu mendatar
+ * layar. Dengan begitu arah putar selalu mengikuti arah jari, berapa pun
+ * kemiringan kartu penanda terhadap kamera. Memakai sumbu objek terasa kacau
+ * begitu kartunya dilihat dari samping.
+ *
+ * Rotasinya ditumpuk sebagai quaternion, bukan sudut Euler, supaya bisa
+ * berputar terus tanpa batas dan tidak terkunci saat mengarah ke kutub.
  *
  * Listener dipasang di canvas 3D, bukan di container, supaya sentuhan pada
  * tombol overlay tidak ikut memutar objek.
@@ -21,10 +30,16 @@ const ROTATE_SENSITIVITY = 0.008;
  */
 export class ObjectTransform {
   private readonly surface: HTMLElement;
+  private readonly camera: THREE.Camera;
   private readonly pointers = new Map<number, { x: number; y: number }>();
 
   private pivot: THREE.Object3D | null = null;
   private pinchDistance = 0;
+
+  // Buffer yang dipakai ulang supaya tidak mengalokasi objek tiap gerakan jari.
+  private readonly axis = new THREE.Vector3();
+  private readonly rotation = new THREE.Quaternion();
+  private readonly parentInverse = new THREE.Quaternion();
 
   private readonly onPointerDown = (event: PointerEvent) => {
     this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -40,7 +55,10 @@ export class ObjectTransform {
     this.pointers.set(event.pointerId, current);
 
     if (this.pointers.size === 1) {
-      this.pivot.rotation.y += (current.x - previous.x) * ROTATE_SENSITIVITY;
+      // Sumbu tegak layar untuk geseran mendatar, sumbu mendatar layar untuk
+      // geseran tegak. Tandanya dibalik agar objek terasa mengikuti jari.
+      this.rotateAround(0, 1, 0, (current.x - previous.x) * ROTATE_SENSITIVITY);
+      this.rotateAround(1, 0, 0, (current.y - previous.y) * ROTATE_SENSITIVITY);
       return;
     }
 
@@ -64,8 +82,9 @@ export class ObjectTransform {
     this.applyScale(this.pivot.scale.x * (event.deltaY < 0 ? 1.08 : 1 / 1.08));
   };
 
-  constructor(surface: HTMLElement) {
+  constructor(surface: HTMLElement, camera: THREE.Camera) {
     this.surface = surface;
+    this.camera = camera;
     surface.addEventListener('pointerdown', this.onPointerDown);
     surface.addEventListener('pointermove', this.onPointerMove);
     surface.addEventListener('pointerup', this.onPointerUp);
@@ -82,7 +101,7 @@ export class ObjectTransform {
 
   reset(): void {
     if (!this.pivot) return;
-    this.pivot.rotation.y = 0;
+    this.pivot.quaternion.identity();
     this.pivot.scale.setScalar(1);
   }
 
@@ -94,6 +113,31 @@ export class ObjectTransform {
     this.surface.removeEventListener('wheel', this.onWheel);
     this.pointers.clear();
     this.pivot = null;
+  }
+
+  /**
+   * Memutar pivot mengelilingi sumbu yang tetap terhadap layar.
+   *
+   * Sumbu ditulis dalam ruang kamera, lalu dipindahkan ke ruang induk pivot.
+   * Tanpa langkah itu, putaran akan mengikuti kemiringan kartu penanda dan
+   * terasa seperti melawan arah jari saat kartu dilihat dari samping.
+   */
+  private rotateAround(x: number, y: number, z: number, angle: number): void {
+    const pivot = this.pivot;
+    if (!pivot || angle === 0) return;
+
+    this.axis.set(x, y, z).applyQuaternion(this.camera.quaternion);
+
+    const parent = pivot.parent;
+    if (parent) {
+      parent.getWorldQuaternion(this.parentInverse);
+      this.axis.applyQuaternion(this.parentInverse.invert());
+    }
+
+    this.rotation.setFromAxisAngle(this.axis.normalize(), angle);
+    // premultiply: putaran dikenakan di ruang induk, bukan ruang lokal objek,
+    // sehingga sumbunya tidak ikut berputar bersama objeknya.
+    pivot.quaternion.premultiply(this.rotation);
   }
 
   private applyScale(value: number): void {
