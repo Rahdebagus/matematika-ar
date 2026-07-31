@@ -17,7 +17,14 @@ npm run dev        # dev server (--host, bisa dibuka dari HP via IP lokal)
 npm run build      # tsc + vite build -> dist/
 npm run preview    # cek hasil build
 npm run typecheck  # tsc --noEmit
+
+# Kompilasi ulang kartu penanda -> public/targets/targets.mind
+# Jalankan hanya kalau gambar di public/markers/ berubah.
+npm run compile:targets
 ```
+
+> Urutan file di `scripts/compile-targets.mjs` menentukan `targetIndex`
+> (object-1 = 0, object-2 = 1, dst). Jangan diacak tanpa memperbarui data.
 
 > Kamera hanya aktif di origin aman: `localhost` atau HTTPS. Untuk uji AR di HP,
 > deploy ke Vercel — bukan lewat IP lokal `http://`.
@@ -27,7 +34,7 @@ npm run typecheck  # tsc --noEmit
 Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md).
 
 - [x] **Fase 0** — Scaffold: Vite + TS + Three, render loop, kubus uji
-- [ ] **Fase 1** — Kamera AR (MindAR, satu marker)
+- [x] **Fase 1** — Kamera AR: MindAR menyala, 4 marker terlacak, kubus di anchor
 - [ ] **Fase 2** — `ModelLoader` (.glb di atas marker)
 - [ ] **Fase 3** — Measurement (garis + label dari JSON)
 - [ ] **Fase 4** — Overlay AR
