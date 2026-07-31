@@ -1,0 +1,38 @@
+:root {
+  --bg: #0b1020;
+  --fg: #e8ecff;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  /* Cegah tarik-untuk-refresh & zoom dua jari saat mengarahkan kamera. */
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Canvas WebGL mengisi penuh container.
+   Nanti CSS2DRenderer ditumpuk di atasnya dengan position: absolute. */
+#app > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
