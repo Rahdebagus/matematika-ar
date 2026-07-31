@@ -11,13 +11,19 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
-    <!-- Urutan tumpukan: video (z0) < canvas WebGL (z1) < UI (z2). -->
+    <!-- Urutan tumpukan di dalam #app: video (z0) < canvas WebGL (z1) < UI (z2). -->
     <div id="app">
-      <div id="ui">
-        <p id="status">Siapkan kartu penanda, lalu tekan tombol di bawah.</p>
-        <button id="start" type="button">Mulai AR</button>
+      <div id="ar-screen">
+        <button id="ar-back" type="button">&larr; Menu</button>
+        <div id="ui">
+          <p id="status">Arahkan kamera ke kartu penanda</p>
+        </div>
       </div>
     </div>
+
+    <!-- Menu, Panduan, Tentang. Menutupi tampilan AR saat aktif. -->
+    <div id="screens"></div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

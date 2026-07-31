@@ -46,7 +46,7 @@ Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](mate
 - [x] **Fase 2** — `ModelLoader` (.glb di atas marker) — baru Objek 4 yang punya model
 - [x] **Fase 3** — Measurement: garis + label dari JSON (kubus & balok sebagai contoh)
 - [x] **Fase 4** — Overlay AR: tampilkan/sembunyikan/transparan/reset + saring kategori
-- [ ] **Fase 5** — Layar & Router
+- [x] **Fase 5** — Layar & Router: menu, panduan, tentang, dialog Materi, transisi fade
 - [ ] **Fase 6** — Polish (bloom, transparansi, audio)
 - [ ] **Fase 7** — Multi-marker
 - [ ] **Fase 8** — Deploy + QR

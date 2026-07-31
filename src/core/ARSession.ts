@@ -78,8 +78,13 @@ export class ARSession {
           return;
         }
 
+        // stop() melepas Controller dan mengosongkan postMatrices, tapi
+        // pembaruan yang sudah antre di worker masih bisa menyusul sesudahnya.
+        const postMatrix = this.postMatrices[targetIndex];
+        if (!postMatrix) return;
+
         // postMatrix menskalakan unit marker -> meter dan memusatkan origin.
-        this.scratch.fromArray(worldMatrix).multiply(this.postMatrices[targetIndex]);
+        this.scratch.fromArray(worldMatrix).multiply(postMatrix);
         this.handler(targetIndex, this.scratch);
       },
     });
@@ -104,11 +109,21 @@ export class ARSession {
     this.running = true;
   }
 
+  /**
+   * Mematikan kamera dan melepas Controller sepenuhnya.
+   *
+   * Controller ikut dilepas — bukan sekadar dihentikan — supaya keluar-masuk
+   * layar AR tidak menumpuk worker tracking yang menganggur. `start()`
+   * berikutnya membangunnya lagi dari awal; targets.mind sudah ada di cache
+   * browser jadi tidak diunduh ulang.
+   */
   stop(): void {
     if (!this.running) return;
     this.running = false;
 
-    this.controller?.stopProcessVideo();
+    this.controller?.dispose();
+    this.controller = null;
+    this.postMatrices = [];
 
     const stream = this.video?.srcObject;
     if (stream instanceof MediaStream) {
@@ -120,10 +135,7 @@ export class ARSession {
 
   dispose(): void {
     this.stop();
-    this.controller?.dispose();
-    this.controller = null;
     this.handler = null;
-    this.postMatrices = [];
   }
 
   /**

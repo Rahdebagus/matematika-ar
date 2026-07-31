@@ -49,6 +49,19 @@ export class MarkerRegistry {
     return this.visible.size > 0;
   }
 
+  /**
+   * Sembunyikan semua anchor. Dipakai saat keluar dari layar AR: tanpa ini
+   * objek yang terakhir terlihat masih tergambar saat kamera sudah mati.
+   */
+  hideAll(): void {
+    for (const [targetIndex, group] of this.groups) {
+      group.visible = false;
+      if (this.visible.delete(targetIndex)) {
+        this.events.onLost?.(targetIndex);
+      }
+    }
+  }
+
   dispose(): void {
     for (const group of this.groups.values()) {
       group.traverse((object) => {

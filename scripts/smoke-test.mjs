@@ -175,17 +175,60 @@ const check = (ok, label, detail = '') => {
 try {
   await page.goto(url, { waitUntil: 'load', timeout: 30_000 });
 
-  // 1. Bootstrap selesai: app-data.json termuat, tombol siap.
-  const statusBefore = await page.textContent('#status');
+  /**
+   * Menunggu layar dengan judul tertentu terlihat DAN transisi fade-nya
+   * selesai. Tanpa menunggu opacity, Playwright menganggapnya sudah terlihat
+   * saat masih setengah transparan — klik bisa meleset dan tangkapan layar
+   * jadi pucat.
+   */
+  const waitScreen = async (heading) => {
+    const panel = page.locator(`#screens .screen-panel:visible h1:text-is("${heading}")`);
+    await panel.waitFor({ timeout: 10_000 });
+    await page.waitForFunction(
+      (text) => {
+        const found = [...document.querySelectorAll('#screens .screen-panel h1')].find(
+          (h) => h.textContent === text,
+        );
+        const screen = found?.closest('.screen');
+        return screen !== null && screen !== undefined && getComputedStyle(screen).opacity === '1';
+      },
+      heading,
+      { timeout: 10_000 },
+    );
+  };
+
+  // 1. Router menampilkan menu lebih dulu.
+  await waitScreen('Matematika AR');
+  check(true, 'menu tampil saat aplikasi dibuka');
+
+  if (process.env.SMOKE_SHOT) {
+    await page.screenshot({ path: process.env.SMOKE_SHOT.replace(/\.png$/, '-menu.png') });
+  }
+
+  // 1b. Navigasi antar-layar dan dialog Materi.
+  await page.click('.menu-button:text-is("Panduan")');
+  await waitScreen('Panduan');
+  await page.click('#screens .screen-panel:visible .menu-button:text-is("Kembali")');
+  await waitScreen('Matematika AR');
+  check(true, 'Panduan dibuka lalu kembali ke menu');
+
+  await page.click('.menu-button:text-is("Tentang")');
+  await waitScreen('Tentang');
+  await page.click('#screens .screen-panel:visible .menu-button:text-is("Kembali")');
+  await waitScreen('Matematika AR');
+  check(true, 'Tentang dibuka lalu kembali ke menu');
+
+  await page.click('.menu-button:text-is("Materi")');
+  await page.locator('dialog.dialog[open]').waitFor({ timeout: 5_000 });
+  await page.click('.dialog-close');
   check(
-    statusBefore?.includes('Siapkan kartu penanda') ?? false,
-    'bootstrap + app-data.json termuat',
-    statusBefore ?? '(kosong)',
+    (await page.locator('dialog.dialog[open]').count()) === 0,
+    'dialog Materi terbuka lalu tertutup',
   );
 
   // 2. Kamera + Controller + targets.mind. Kalau registry.bind terlupa,
   //    ARSession.start() melempar dan langkah ini gagal.
-  await page.click('#start');
+  await page.click('.menu-button:text-is("Mulai AR")');
   await page.waitForFunction(
     () => document.querySelector('#status')?.textContent !== 'Menyalakan kamera...',
     { timeout: 90_000 },
@@ -287,6 +330,17 @@ try {
     await page.screenshot({ path: process.env.SMOKE_SHOT });
     console.log(`  (tangkapan layar -> ${process.env.SMOKE_SHOT})`);
   }
+
+  // 4c. Keluar dari layar AR harus mematikan kamera, bukan sekadar menutupi.
+  await page.click('#ar-back');
+  await waitScreen('Matematika AR');
+  const cameraLive = await page.evaluate(() => {
+    const video = document.querySelector('#app video');
+    if (!video) return false;
+    const stream = video.srcObject;
+    return stream instanceof MediaStream && stream.getTracks().some((t) => t.readyState === 'live');
+  });
+  check(!cameraLive, 'kembali ke menu mematikan kamera');
 
   // 5. Tidak ada aset yang hilang. favicon dikecualikan: belum dibuat, dan
   //    tidak berpengaruh ke jalannya AR.

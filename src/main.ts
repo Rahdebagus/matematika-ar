@@ -1,26 +1,98 @@
 import { App } from './core/App';
 import { ARSession } from './core/ARSession';
+import { Router } from './core/Router';
 import { MarkerRegistry } from './ar/MarkerRegistry';
 import { AnchorController } from './ar/AnchorController';
 import { ModelLoader } from './models/ModelLoader';
 import { AROverlay } from './ui/AROverlay';
+import { Dialog } from './ui/Dialog';
+import { MenuScreen } from './ui/screens/MenuScreen';
+import { InfoScreen } from './ui/screens/InfoScreen';
 import { loadAppData } from './data/loadAppData';
 
 const container = document.querySelector<HTMLDivElement>('#app');
+const arScreen = document.querySelector<HTMLDivElement>('#ar-screen');
+const backButton = document.querySelector<HTMLButtonElement>('#ar-back');
 const uiEl = document.querySelector<HTMLDivElement>('#ui');
 const statusEl = document.querySelector<HTMLParagraphElement>('#status');
-const startButton = document.querySelector<HTMLButtonElement>('#start');
+const screensEl = document.querySelector<HTMLDivElement>('#screens');
 
-if (!container || !uiEl || !statusEl || !startButton) {
-  throw new Error('Elemen #app / #ui / #status / #start tidak ditemukan di index.html');
+if (!container || !arScreen || !backButton || !uiEl || !statusEl || !screensEl) {
+  throw new Error('Kerangka DOM di index.html tidak lengkap');
 }
 
 const overlay = new AROverlay(uiEl, statusEl);
+const dialog = new Dialog();
+const router = new Router();
 
-async function bootstrap(
-  root: HTMLDivElement,
-  button: HTMLButtonElement,
-): Promise<void> {
+const menu = new MenuScreen({
+  onMulaiAR: () => router.show('ar'),
+  // docs menetapkan Materi sebagai dialog, bukan layar tersendiri.
+  onMateri: () => dialog.showComingSoon('Materi'),
+  onPanduan: () => router.show('panduan'),
+  onTentang: () => router.show('tentang'),
+});
+
+const panduan = new InfoScreen(
+  'Panduan',
+  [
+    { type: 'paragraph', text: 'Siapkan kartu penanda sebelum memulai AR.' },
+    {
+      type: 'steps',
+      items: [
+        'Cetak salah satu kartu penanda di bawah, atau tampilkan di layar lain.',
+        'Buka menu utama lalu tekan "Mulai AR" dan izinkan akses kamera.',
+        'Arahkan kamera ke kartu sampai objek 3D muncul.',
+        'Pakai tombol di bawah layar untuk menampilkan, menyembunyikan, atau membuat objek transparan.',
+        'Tekan nama kategori untuk memilih ukuran yang ditampilkan.',
+      ],
+    },
+    {
+      type: 'paragraph',
+      text: 'Jika objek tidak muncul, dekatkan kamera atau cetak kartu lebih besar. Kartu yang terlalu kecil di layar bisa salah dikenali.',
+    },
+    {
+      type: 'links',
+      items: [
+        { label: 'Kartu penanda 1 — Kubus 10 cm', href: '/markers/object-1.png' },
+        { label: 'Kartu penanda 2 — Balok 12x8x6 cm', href: '/markers/object-2.png' },
+        { label: 'Kartu penanda 3 — Kubus 15 cm', href: '/markers/object-3.png' },
+        { label: 'Kartu penanda 4 — Objek 4', href: '/markers/object-4.png' },
+      ],
+    },
+  ],
+  () => router.show('menu'),
+);
+
+const tentang = new InfoScreen(
+  'Tentang',
+  [
+    {
+      type: 'paragraph',
+      text: 'Matematika AR adalah aplikasi edukasi berbasis WebAR untuk belajar pengukuran, bangun ruang, dan geometri.',
+    },
+    {
+      type: 'paragraph',
+      text: 'Objek 3D muncul di atas kartu penanda lengkap dengan titik, garis ukur, dan label. Aplikasi berjalan langsung di browser HP tanpa perlu memasang APK.',
+    },
+    {
+      type: 'paragraph',
+      text: 'Dibuat dengan TypeScript, Three.js, dan MindAR. Versi web ini menggantikan versi Unity dengan logika yang sama.',
+    },
+  ],
+  () => router.show('menu'),
+);
+
+screensEl.append(menu.element, panduan.element, tentang.element);
+
+router.register('ar', arScreen);
+router.register('menu', menu.element);
+router.register('panduan', panduan.element);
+router.register('tentang', tentang.element);
+
+backButton.addEventListener('click', () => router.show('menu'));
+
+async function bootstrap(root: HTMLDivElement): Promise<void> {
   const app = new App(root);
   app.start();
 
@@ -92,20 +164,26 @@ async function bootstrap(
     syncResolution();
   });
 
-  button.addEventListener('click', async () => {
-    button.disabled = true;
+  // Kamera hanya menyala selama layar AR terbuka — menutup halaman menu
+  // dengan kamera tetap hidup boros baterai dan bikin was-was.
+  router.onEnter('ar', () => {
     overlay.setStatus('Menyalakan kamera...');
-
-    try {
-      await session.start();
-      button.hidden = true;
-      overlay.setStatus('Arahkan kamera ke kartu penanda');
-    } catch (error) {
-      button.disabled = false;
-      overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai AR');
-      console.error(error);
-    }
+    session.start().then(
+      () => overlay.setStatus('Arahkan kamera ke kartu penanda'),
+      (error: unknown) => {
+        overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai AR');
+        console.error(error);
+      },
+    );
   });
+
+  router.onExit('ar', () => {
+    session.stop();
+    registry.hideAll();
+    overlay.bind(null);
+  });
+
+  router.show('menu');
 
   // Hot reload Vite: lepas resource lama agar tidak menumpuk context WebGL.
   if (import.meta.hot) {
@@ -115,13 +193,13 @@ async function bootstrap(
       registry.dispose();
       models.dispose();
       overlay.dispose();
+      dialog.dispose();
       app.dispose();
     });
   }
 }
 
-bootstrap(container, startButton).catch((error: unknown) => {
-  startButton.disabled = true;
+bootstrap(container).catch((error: unknown) => {
   overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai aplikasi');
   console.error(error);
 });
