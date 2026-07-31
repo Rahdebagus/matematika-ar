@@ -14,6 +14,10 @@
     "mind-ar": "^1.2.5",
     "three": "^0.185.1"
   },
+  "//overrides": "mind-ar menarik `canvas` (native). Paket itu tidak punya prebuilt untuk Node 22, jadi npm mencoba meng-compile dari source dan gagal di Vercel. Kita tidak memakainya sama sekali — hanya OfflineCompiler mind-ar yang butuh, dan kita pakai @napi-rs/canvas (prebuilt) di scripts/compile-targets.mjs. API createCanvas-nya kompatibel.",
+  "overrides": {
+    "canvas": "npm:@napi-rs/canvas@^1.0.3"
+  },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.3",
     "@types/three": "^0.185.1",
