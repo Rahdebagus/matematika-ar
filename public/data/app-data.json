@@ -1,0 +1,153 @@
+{
+  "targetsUrl": "/targets/targets.mind",
+  "defaultStyle": {
+    "lineColor": "#14E6FF",
+    "lineWidth": 4,
+    "labelColor": "#FFFFFF",
+    "labelFontSize": 20,
+    "showArrows": true,
+    "arrowLength": 0.012,
+    "arrowHalfWidth": 0.005,
+    "worldUnits": false
+  },
+  "objects": [
+    {
+      "id": "kubus",
+      "displayName": "Kubus 10 cm",
+      "primitive": { "type": "box", "size": [0.1, 0.1, 0.1] },
+      "targetIndex": 0,
+      "points": [
+        { "id": "A", "position": [-0.05, 0.0, -0.05] },
+        { "id": "B", "position": [0.05, 0.0, -0.05] },
+        { "id": "C", "position": [0.05, 0.0, 0.05] },
+        { "id": "D", "position": [-0.05, 0.0, 0.05] },
+        { "id": "E", "position": [-0.05, 0.1, -0.05] },
+        { "id": "F", "position": [0.05, 0.1, -0.05] },
+        { "id": "G", "position": [0.05, 0.1, 0.05] },
+        { "id": "H", "position": [-0.05, 0.1, 0.05] }
+      ],
+      "measurements": [
+        {
+          "id": "DC", "from": "D", "to": "C",
+          "displayName": "Rusuk", "symbol": "s", "value": "10", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "CB", "from": "C", "to": "B",
+          "displayName": "Rusuk", "symbol": "s", "value": "10", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "CG", "from": "C", "to": "G",
+          "displayName": "Tinggi", "symbol": "t", "value": "10", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "DB", "from": "D", "to": "B",
+          "displayName": "Diagonal sisi", "symbol": "ds", "value": "14,1", "unit": "cm",
+          "category": "Diagonal", "visibleOnStart": true
+        },
+        {
+          "id": "DF", "from": "D", "to": "F",
+          "displayName": "Diagonal ruang", "symbol": "dr", "value": "17,3", "unit": "cm",
+          "category": "Diagonal", "visibleOnStart": true
+        },
+        {
+          "id": "G", "from": "G", "to": "G",
+          "displayName": "Titik G",
+          "category": "Titik", "visibleOnStart": true
+        }
+      ]
+    },
+    {
+      "id": "balok",
+      "displayName": "Balok 12x8x6 cm",
+      "primitive": { "type": "box", "size": [0.12, 0.06, 0.08] },
+      "targetIndex": 1,
+      "points": [
+        { "id": "A", "position": [-0.06, 0.0, -0.04] },
+        { "id": "B", "position": [0.06, 0.0, -0.04] },
+        { "id": "C", "position": [0.06, 0.0, 0.04] },
+        { "id": "D", "position": [-0.06, 0.0, 0.04] },
+        { "id": "E", "position": [-0.06, 0.06, -0.04] },
+        { "id": "F", "position": [0.06, 0.06, -0.04] },
+        { "id": "G", "position": [0.06, 0.06, 0.04] },
+        { "id": "H", "position": [-0.06, 0.06, 0.04] }
+      ],
+      "measurements": [
+        {
+          "id": "DC", "from": "D", "to": "C",
+          "displayName": "Panjang", "symbol": "p", "value": "12", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "CB", "from": "C", "to": "B",
+          "displayName": "Lebar", "symbol": "l", "value": "8", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "CG", "from": "C", "to": "G",
+          "displayName": "Tinggi", "symbol": "t", "value": "6", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "DB", "from": "D", "to": "B",
+          "displayName": "Diagonal alas", "symbol": "da", "value": "14,4", "unit": "cm",
+          "category": "Diagonal", "visibleOnStart": true
+        },
+        {
+          "id": "DF", "from": "D", "to": "F",
+          "displayName": "Diagonal ruang", "symbol": "dr", "value": "15,6", "unit": "cm",
+          "category": "Diagonal", "visibleOnStart": true
+        }
+      ]
+    },
+    {
+      "id": "kubus-besar",
+      "displayName": "Kubus 15 cm",
+      "primitive": { "type": "box", "size": [0.15, 0.15, 0.15] },
+      "targetIndex": 2,
+      "style": { "lineColor": "#FFC24B", "arrowLength": 0.018, "arrowHalfWidth": 0.0075 },
+      "points": [
+        { "id": "A", "position": [-0.075, 0.0, -0.075] },
+        { "id": "B", "position": [0.075, 0.0, -0.075] },
+        { "id": "C", "position": [0.075, 0.0, 0.075] },
+        { "id": "D", "position": [-0.075, 0.0, 0.075] },
+        { "id": "E", "position": [-0.075, 0.15, -0.075] },
+        { "id": "F", "position": [0.075, 0.15, -0.075] },
+        { "id": "G", "position": [0.075, 0.15, 0.075] },
+        { "id": "H", "position": [-0.075, 0.15, 0.075] }
+      ],
+      "measurements": [
+        {
+          "id": "DC", "from": "D", "to": "C",
+          "displayName": "Rusuk", "symbol": "s", "value": "15", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "CG", "from": "C", "to": "G",
+          "displayName": "Tinggi", "symbol": "t", "value": "15", "unit": "cm",
+          "category": "Rusuk", "visibleOnStart": true
+        },
+        {
+          "id": "DB", "from": "D", "to": "B",
+          "displayName": "Diagonal sisi", "symbol": "ds", "value": "21,2", "unit": "cm",
+          "category": "Diagonal", "visibleOnStart": true
+        },
+        {
+          "id": "DF", "from": "D", "to": "F",
+          "displayName": "Diagonal ruang", "symbol": "dr", "value": "26,0", "unit": "cm",
+          "category": "Diagonal", "visibleOnStart": true
+        }
+      ]
+    },
+    {
+      "id": "objek-4",
+      "displayName": "Objek 4",
+      "modelUrl": "/models/object-4.glb",
+      "targetIndex": 3,
+      "points": [],
+      "measurements": []
+    }
+  ]
+}

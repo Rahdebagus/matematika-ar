@@ -1,40 +1,49 @@
 import * as THREE from 'three';
 
+export interface MarkerFit {
+  /** Ditempel ke anchor marker. Membawa rotasi + skala. */
+  holder: THREE.Group;
+  /**
+   * Ruang model: Y ke atas, satuan meter, sama persis dengan koordinat
+   * `points` di app-data.json. Garis ukur ditambahkan ke sini agar ikut
+   * berpindah dan berskala bersama model.
+   */
+  content: THREE.Group;
+}
+
 /**
- * Menyesuaikan model .glb ke ruang anchor marker.
+ * Menyesuaikan objek ke ruang anchor marker.
  *
  * Dua sistem koordinat berbeda:
- * - glTF  : Y ke atas, satuan meter dunia nyata.
- * - Anchor: kartu terletak di bidang XY, **Z keluar** dari kartu,
- *           dan 1 unit = lebar kartu.
+ * - Model  : Y ke atas, satuan meter (konvensi glTF dan docs/02-data-model.md).
+ * - Anchor : kartu di bidang XY, **Z keluar** dari kartu, 1 unit = lebar kartu.
  *
- * Maka model diputar +90 derajat pada sumbu X (Y -> Z), diskalakan agar
- * tapaknya sebesar `widthFraction` kali lebar kartu, lalu digeser supaya
- * alasnya duduk tepat di permukaan kartu dan terpusat.
+ * `holder` memutar +90 derajat pada X (Y model -> Z anchor) lalu menskalakan.
+ * `content` menggeser di ruang model — pergeseran ini terjadi SEBELUM rotasi
+ * dan skala, jadi koordinat titik dari JSON tetap apa adanya.
  *
- * @param widthFraction 1 = selebar kartu penanda.
+ * @param widthFraction 1 = tapak objek selebar kartu penanda.
  */
-export function fitToMarker(model: THREE.Object3D, widthFraction = 1): THREE.Group {
+export function fitToMarker(model: THREE.Object3D, widthFraction = 1): MarkerFit {
   const holder = new THREE.Group();
+  const content = new THREE.Group();
 
-  model.rotation.x = Math.PI / 2;
-  holder.add(model);
+  holder.add(content);
+  content.add(model);
 
-  // Ukur setelah rotasi — tapak model kini ada di bidang XY, tinggi di Z.
+  // Diukur di ruang model, sebelum rotasi/skala apa pun.
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
-  const footprint = Math.max(size.x, size.y);
+  const center = box.getCenter(new THREE.Vector3());
 
-  if (footprint > 0) {
-    model.scale.multiplyScalar(widthFraction / footprint);
-  }
+  // Tapak = bidang XZ pada model Y-up.
+  const footprint = Math.max(size.x, size.z);
 
-  // Ukur ulang setelah skala, lalu pusatkan XY dan duduk kan di Z = 0.
-  const scaled = new THREE.Box3().setFromObject(model);
-  const center = scaled.getCenter(new THREE.Vector3());
-  model.position.x -= center.x;
-  model.position.y -= center.y;
-  model.position.z -= scaled.min.z;
+  holder.rotation.x = Math.PI / 2;
+  holder.scale.setScalar(footprint > 0 ? widthFraction / footprint : 1);
 
-  return holder;
+  // Pusatkan XZ, dudukkan alas di Y = 0.
+  content.position.set(-center.x, -box.min.y, -center.z);
+
+  return { holder, content };
 }

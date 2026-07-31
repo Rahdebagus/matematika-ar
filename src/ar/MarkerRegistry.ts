@@ -24,13 +24,16 @@ export class MarkerRegistry {
     this.events = events;
   }
 
-  /** Buat anchor untuk satu target. Anchor tersembunyi sampai marker terlihat. */
-  register(targetIndex: number, content: THREE.Object3D): THREE.Group {
+  /**
+   * Buat anchor untuk satu target. Anchor tersembunyi sampai marker terlihat.
+   * Isinya boleh ditambahkan belakangan (mis. setelah model selesai diunduh).
+   */
+  register(targetIndex: number, content?: THREE.Object3D): THREE.Group {
     const group = new THREE.Group();
     // Matriks datang dari tracking, bukan dari position/rotation lokal.
     group.matrixAutoUpdate = false;
     group.visible = false;
-    group.add(content);
+    if (content) group.add(content);
 
     this.scene.add(group);
     this.groups.set(targetIndex, group);

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc && vite build",
+    "build": "npm run check:data && tsc && vite build",
+    "check:data": "node scripts/check-measurements.mjs",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
     "compile:targets": "node scripts/compile-targets.mjs",

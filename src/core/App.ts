@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
 /** Modul yang perlu dipanggil tiap frame oleh render loop App. */
 export interface Updatable {
@@ -16,6 +17,8 @@ export class App {
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
   readonly renderer: THREE.WebGLRenderer;
+  /** Lapisan DOM untuk label ukur (docs/04-tech-notes.md). */
+  readonly labelRenderer: CSS2DRenderer;
 
   private readonly container: HTMLElement;
   private readonly clock = new THREE.Clock();
@@ -39,6 +42,12 @@ export class App {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setClearColor(0x000000, 0);
     this.container.appendChild(this.renderer.domElement);
+
+    // Label ditumpuk persis di atas canvas 3D. pointer-events dimatikan
+    // lewat CSS agar tombol AR di bawahnya tetap bisa ditekan.
+    this.labelRenderer = new CSS2DRenderer();
+    this.labelRenderer.domElement.className = 'label-layer';
+    this.container.appendChild(this.labelRenderer.domElement);
 
     this.addLights();
     this.resize();
@@ -88,6 +97,7 @@ export class App {
 
     this.renderer.dispose();
     this.renderer.domElement.remove();
+    this.labelRenderer.domElement.remove();
   }
 
   private tick(): void {
@@ -98,6 +108,7 @@ export class App {
     }
 
     this.renderer.render(this.scene, this.camera);
+    this.labelRenderer.render(this.scene, this.camera);
   }
 
   private resize(): void {
@@ -107,6 +118,7 @@ export class App {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
+    this.labelRenderer.setSize(width, height);
 
     // ARSession menimpa fov/near/far di sini agar cocok dengan feed kamera.
     for (const handler of this.resizeHandlers) {

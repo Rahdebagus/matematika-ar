@@ -41,6 +41,29 @@ body {
   height: 100%;
 }
 
+/* Lapisan CSS2D untuk label ukur, tepat di atas canvas. */
+.label-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  /* Label tidak boleh menangkap sentuhan yang ditujukan ke tombol AR. */
+  pointer-events: none;
+}
+
+.measurement-label {
+  padding: 0.15em 0.5em;
+  border-radius: 0.4em;
+  background: rgb(6 12 30 / 0.72);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  /* Tetap terbaca di atas latar kamera yang terang. */
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.9);
+  /* Jangan setel `transform` di sini — CSS2DRenderer menimpanya inline
+     dengan translate(-50%,-50%) + posisi hasil proyeksi. */
+}
+
 #ui {
   position: absolute;
   inset: auto 0 0 0;

@@ -17,6 +17,7 @@ npm run dev        # dev server (--host, bisa dibuka dari HP via IP lokal)
 npm run build      # tsc + vite build -> dist/
 npm run preview    # cek hasil build
 npm run typecheck  # tsc --noEmit
+npm run check:data # nilai label vs jarak titik di app-data.json (ikut jalan saat build)
 
 # Kompilasi ulang kartu penanda -> public/targets/targets.mind
 # Jalankan hanya kalau gambar di public/markers/ berubah.
@@ -39,7 +40,7 @@ Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](mate
 - [x] **Fase 0** — Scaffold: Vite + TS + Three, render loop, kubus uji
 - [x] **Fase 1** — Kamera AR: MindAR menyala, 4 marker terlacak, kubus di anchor
 - [x] **Fase 2** — `ModelLoader` (.glb di atas marker) — baru Objek 4 yang punya model
-- [ ] **Fase 3** — Measurement (garis + label dari JSON)
+- [x] **Fase 3** — Measurement: garis + label dari JSON (kubus & balok sebagai contoh)
 - [ ] **Fase 4** — Overlay AR
 - [ ] **Fase 5** — Layar & Router
 - [ ] **Fase 6** — Polish (bloom, transparansi, audio)
