@@ -37,6 +37,18 @@ npm run optimize:model -- "<sumber.glb>" public/models/<nama>.glb
 > Kamera hanya aktif di origin aman: `localhost` atau HTTPS. Untuk uji AR di HP,
 > deploy ke Vercel — bukan lewat IP lokal `http://`.
 
+## Kontrol AR
+
+| Gestur | Aksi |
+|---|---|
+| Geser satu jari | Putar objek pada sumbu tegaknya |
+| Cubit dua jari | Perbesar / perkecil (0,35x – 3x) |
+| Roda tetikus | Perbesar / perkecil (untuk uji di laptop) |
+| Tombol Reset | Kembalikan putaran, ukuran, transparansi, dan tampilan garis |
+
+Gestur dipasang di canvas 3D, bukan di container, supaya sentuhan pada tombol
+overlay tidak ikut memutar objek.
+
 ## Status
 
 Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md).

@@ -133,18 +133,68 @@ const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
  * (yang memakan performa) buffer sudah dibersihkan setelah compositing dan
  * hasilnya selalu nol. Tangkapan layar menangkap hasil akhir halaman.
  */
-const screenBrightness = async (page) => {
-  const buffer = await page.screenshot({
-    clip: { x: 40, y: 200, width: 200, height: 200 },
-  });
+const AR_CLIP = { x: 20, y: 180, width: 440, height: 420 };
+
+const arPixels = async (page) => {
+  const buffer = await page.screenshot({ clip: AR_CLIP });
   const image = await loadImage(buffer);
   const canvas = createCanvas(image.width, image.height);
   const ctx = canvas.getContext('2d');
   ctx.drawImage(image, 0, 0);
-  const { data } = ctx.getImageData(0, 0, image.width, image.height);
+  return ctx.getImageData(0, 0, image.width, image.height).data;
+};
+
+const screenBrightness = async (page) => {
+  const data = await arPixels(page);
   let total = 0;
   for (let i = 0; i < data.length; i += 4) total += data[i] + data[i + 1] + data[i + 2];
   return total / ((data.length / 4) * 3);
+};
+
+/**
+ * Rata-rata selisih piksel antara dua kondisi.
+ *
+ * Untuk gestur, rata-rata kecerahan terlalu tumpul: memutar kubus yang
+ * simetris nyaris tidak mengubah kecerahan rata-rata walau bentuknya jelas
+ * berubah. Selisih per piksel menangkap perpindahan garis dan rusuk.
+ */
+/**
+ * Posisi layar tiap label ukur.
+ *
+ * Label CSS2D diletakkan dari hasil proyeksi titik 3D-nya, jadi pergeserannya
+ * adalah bukti langsung bahwa objek benar-benar berputar atau berubah ukuran.
+ * Selisih piksel tidak bisa dipakai di sini: objek yang menutupi seluruh area
+ * sampel dengan warna rata tetap terlihat identik walau sudah diputar.
+ */
+const labelPositions = (page) =>
+  page.$$eval('.measurement-label', (elements) =>
+    elements
+      .map((element) => element.getBoundingClientRect())
+      .filter((rect) => rect.width > 0)
+      .map((rect) => [Math.round(rect.x), Math.round(rect.y)]),
+  );
+
+/** Pergeseran label terjauh antara dua kondisi. */
+const maxShift = (before, after) => {
+  if (before.length === 0 || before.length !== after.length) return Infinity;
+  let worst = 0;
+  for (let i = 0; i < before.length; i++) {
+    worst = Math.max(
+      worst,
+      Math.abs(before[i][0] - after[i][0]) + Math.abs(before[i][1] - after[i][1]),
+    );
+  }
+  return worst;
+};
+
+const meanDiff = (a, b) => {
+  let total = 0;
+  let n = 0;
+  for (let i = 0; i < a.length; i += 4) {
+    total += Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+    n += 3;
+  }
+  return total / n;
 };
 
 // ---------------------------------------------------------------------- test
@@ -173,8 +223,36 @@ const browser = await chromium.launch({
 const context = await browser.newContext({
   permissions: ['camera'],
   viewport: { width: 480, height: 900 },
+  // Perlu agar Chromium menerima event sentuh untuk uji cubit dua jari.
+  hasTouch: true,
 });
 const page = await context.newPage();
+
+/**
+ * Cubit dua jari. Playwright tidak punya API multi-sentuh, jadi event-nya
+ * dikirim langsung lewat CDP. Ini gestur utama di HP, jadi tidak boleh
+ * hanya mengandalkan roda tetikus yang cuma dipakai saat menguji di laptop.
+ */
+const cdp = await context.newCDPSession(page);
+const pinch = async (centerX, centerY, fromGap, toGap, steps = 6) => {
+  const points = (gap) => [
+    { x: centerX - gap / 2, y: centerY, id: 1 },
+    { x: centerX + gap / 2, y: centerY, id: 2 },
+  ];
+
+  await cdp.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: points(fromGap),
+  });
+  for (let i = 1; i <= steps; i++) {
+    const gap = fromGap + ((toGap - fromGap) * i) / steps;
+    await cdp.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: points(gap),
+    });
+  }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+};
 
 const errors = [];
 const notFound = [];
@@ -349,6 +427,63 @@ try {
       Math.abs(afterFade - beforeFade) > 1,
       'transparansi mengubah tampilan lewat render loop',
       `kecerahan ${beforeFade.toFixed(1)} -> ${afterFade.toFixed(1)}`,
+    );
+
+    // 4d. Gestur putar dan perbesar. Diukur dari piksel karena inilah
+    //     satu-satunya bukti transformasinya benar-benar sampai ke layar.
+    await press('Reset');
+    await page.waitForTimeout(350);
+    const atRest = await labelPositions(page);
+
+    await page.mouse.move(240, 400);
+    await page.mouse.down();
+    for (let x = 240; x <= 400; x += 16) {
+      await page.mouse.move(x, 400);
+    }
+    await page.mouse.up();
+    await page.waitForTimeout(200);
+    const rotated = await labelPositions(page);
+    check(
+      maxShift(atRest, rotated) > 10,
+      'geser satu jari memutar objek',
+      `label bergeser ${maxShift(atRest, rotated)} px`,
+    );
+
+    if (process.env.SMOKE_SHOT) {
+      await page.screenshot({
+        path: process.env.SMOKE_SHOT.replace(/\.png$/, '-diputar.png'),
+      });
+    }
+
+    await page.mouse.move(240, 400);
+    for (let i = 0; i < 8; i++) await page.mouse.wheel(0, -120);
+    await page.waitForTimeout(200);
+    const zoomed = await labelPositions(page);
+    check(
+      maxShift(rotated, zoomed) > 10,
+      'roda tetikus memperbesar objek',
+      `label bergeser ${maxShift(rotated, zoomed)} px`,
+    );
+
+    await press('Reset');
+    await page.waitForTimeout(350);
+    const beforePinch = await labelPositions(page);
+    await pinch(240, 420, 80, 320);
+    await page.waitForTimeout(200);
+    const pinched = await labelPositions(page);
+    check(
+      maxShift(beforePinch, pinched) > 10,
+      'cubit dua jari memperbesar objek',
+      `label bergeser ${maxShift(beforePinch, pinched)} px`,
+    );
+
+    await press('Reset');
+    await page.waitForTimeout(350);
+    const reset = await labelPositions(page);
+    check(
+      maxShift(atRest, reset) <= 1,
+      'Reset mengembalikan putaran dan ukuran',
+      `sisa selisih ${maxShift(atRest, reset)} px`,
     );
 
     const chips = await page.locator('.overlay-chip').count();

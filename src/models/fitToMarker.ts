@@ -2,8 +2,16 @@ import * as THREE from 'three';
 import type { FitMode } from '../data/types';
 
 export interface MarkerFit {
-  /** Ditempel ke anchor marker. Membawa rotasi + skala. */
+  /** Ditempel ke anchor marker. Membawa rotasi + skala dasar. */
   holder: THREE.Group;
+  /**
+   * Tempat gestur pengguna bekerja: putar pada sumbu Y dan perbesar.
+   *
+   * Sengaja dipisah dari `content`. `content` membawa pergeseran pemusatan,
+   * jadi memutarnya langsung akan membuat objek mengorbit titik anchor
+   * alih-alih berputar di tempat.
+   */
+  pivot: THREE.Group;
   /**
    * Ruang model: Y ke atas, satuan meter, sama persis dengan koordinat
    * `points` di app-data.json. Garis ukur ditambahkan ke sini agar ikut
@@ -38,9 +46,11 @@ export interface FitOptions {
  */
 export function fitToMarker(model: THREE.Object3D, options: FitOptions): MarkerFit {
   const holder = new THREE.Group();
+  const pivot = new THREE.Group();
   const content = new THREE.Group();
 
-  holder.add(content);
+  holder.add(pivot);
+  pivot.add(content);
   content.add(model);
 
   // Diukur di ruang model, sebelum rotasi/skala apa pun.
@@ -66,5 +76,5 @@ export function fitToMarker(model: THREE.Object3D, options: FitOptions): MarkerF
   // Pusatkan XZ, dudukkan alas di Y = 0.
   content.position.set(-center.x, -box.min.y, -center.z);
 
-  return { holder, content };
+  return { holder, pivot, content };
 }

@@ -20,6 +20,7 @@ export class AnchorController {
 
   private loading: Promise<void> | null = null;
   private controller: MeasurementController | null = null;
+  private pivotNode: THREE.Object3D | null = null;
   private placeholderGeometry: THREE.BufferGeometry | null = null;
   private placeholderMaterial: THREE.Material | null = null;
 
@@ -43,6 +44,11 @@ export class AnchorController {
     return this.controller;
   }
 
+  /** Simpul tempat gestur putar/perbesar bekerja. */
+  get pivot(): THREE.Object3D | null {
+    return this.pivotNode;
+  }
+
   load(): Promise<void> {
     this.loading ??= this.doLoad().catch((error: unknown) => {
       // Boleh dicoba lagi saat marker terlihat berikutnya.
@@ -62,12 +68,13 @@ export class AnchorController {
 
   private async doLoad(): Promise<void> {
     const model = await this.buildModel();
-    const { holder, content } = fitToMarker(model, {
+    const { holder, pivot, content } = fitToMarker(model, {
       markerWidthMeters: this.markerWidthMeters,
       mode: this.object.fit,
       scale: this.object.scale,
     });
     this.group.add(holder);
+    this.pivotNode = pivot;
 
     const style: MeasurementStyle = { ...this.style, ...this.object.style };
     this.controller = new MeasurementController(content, this.object, style, model);

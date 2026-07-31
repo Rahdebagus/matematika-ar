@@ -4,6 +4,7 @@ import { Router } from './core/Router';
 import { MarkerRegistry } from './ar/MarkerRegistry';
 import { AnchorController } from './ar/AnchorController';
 import { ModelLoader } from './models/ModelLoader';
+import { ObjectTransform } from './ar/ObjectTransform';
 import { AROverlay } from './ui/AROverlay';
 import { Dialog } from './ui/Dialog';
 import { MenuScreen } from './ui/screens/MenuScreen';
@@ -52,8 +53,10 @@ const panduan = new InfoScreen(
         'Cetak salah satu kartu penanda di bawah, atau tampilkan di layar lain.',
         'Buka menu utama lalu tekan "Mulai AR" dan izinkan akses kamera.',
         'Arahkan kamera ke kartu sampai objek 3D muncul.',
+        'Geser satu jari di layar untuk memutar objek, dan cubit dua jari untuk memperbesar atau memperkecil.',
         'Pakai tombol di bawah layar untuk menampilkan, menyembunyikan, atau membuat objek transparan.',
         'Tekan nama kategori untuk memilih ukuran yang ditampilkan.',
+        'Tombol Reset mengembalikan putaran, ukuran, dan tampilan garis ke kondisi awal.',
       ],
     },
     {
@@ -120,6 +123,11 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
   const models = new ModelLoader();
   const anchors = new Map<number, AnchorController>();
 
+  // Dipasang di canvas, bukan container: sentuhan pada tombol overlay
+  // tidak boleh ikut memutar objek.
+  const transform = new ObjectTransform(app.renderer.domElement);
+  overlay.setResetHook(() => transform.reset());
+
   const registry = new MarkerRegistry(app.scene, {
     onFound: (targetIndex) => {
       const anchor = anchors.get(targetIndex);
@@ -131,6 +139,7 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
     onLost: () => {
       // Tombol dimatikan supaya tidak ada aksi tanpa objek aktif.
       overlay.bind(null);
+      transform.bind(null);
       overlay.setStatus('Arahkan kamera ke kartu penanda');
     },
   });
@@ -169,6 +178,7 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
       if (measurements) app.addUpdatable(measurements);
 
       overlay.bind(measurements);
+      transform.bind(anchor.pivot);
     } catch (error) {
       overlay.setStatus(`Gagal memuat ${anchor.object.displayName}`);
       console.error(error);
@@ -208,6 +218,7 @@ async function bootstrap(root: HTMLDivElement): Promise<void> {
       for (const anchor of anchors.values()) anchor.dispose();
       registry.dispose();
       models.dispose();
+      transform.dispose();
       overlay.dispose();
       dialog.dispose();
       audio.dispose();

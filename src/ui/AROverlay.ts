@@ -31,6 +31,9 @@ export class AROverlay {
   private controller: MeasurementController | null = null;
   private transparent = false;
 
+  /** Dipanggil tombol Reset, untuk hal di luar measurement (mis. gestur). */
+  private onReset: (() => void) | null = null;
+
   constructor(host: HTMLElement, statusEl: HTMLElement) {
     this.statusEl = statusEl;
 
@@ -55,6 +58,10 @@ export class AROverlay {
 
   setStatus(text: string): void {
     this.statusEl.textContent = text;
+  }
+
+  setResetHook(handler: () => void): void {
+    this.onReset = handler;
   }
 
   /** `null` saat tidak ada marker yang terlihat. */
@@ -97,6 +104,8 @@ export class AROverlay {
   }
 
   private reset(): void {
+    // Putaran dan ukuran dikembalikan walau objeknya belum terikat.
+    this.onReset?.();
     if (!this.controller) return;
     this.controller.reset();
     this.transparent = false;
