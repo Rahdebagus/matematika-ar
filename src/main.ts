@@ -60,6 +60,10 @@ async function bootstrap(
     );
   }
 
+  // Tanpa ini anchor tidak pernah menerima matriks tracking: objek tetap
+  // tersembunyi dan onFound tidak pernah jalan.
+  registry.bind(session);
+
   const syncResolution = () => {
     for (const anchor of anchors.values()) {
       anchor.measurements?.setResolution(root.clientWidth, root.clientHeight);

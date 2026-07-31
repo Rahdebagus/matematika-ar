@@ -53,6 +53,15 @@ export class ARSession {
   async start(): Promise<void> {
     if (this.running) return;
 
+    // Sesi tanpa handler = hasil tracking tidak dipakai siapa pun. Itu selalu
+    // salah rakit (lupa MarkerRegistry.bind), dan tanpa cek ini gejalanya
+    // cuma "objek tidak muncul" tanpa error sama sekali.
+    if (!this.handler) {
+      throw new Error(
+        'ARSession.start() dipanggil tanpa handler. Panggil MarkerRegistry.bind(session) lebih dulu.',
+      );
+    }
+
     const video = await this.startVideo();
     this.video = video;
 
