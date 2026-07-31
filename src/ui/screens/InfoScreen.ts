@@ -1,7 +1,8 @@
 export type InfoBlock =
   | { type: 'paragraph'; text: string }
   | { type: 'steps'; items: string[] }
-  | { type: 'links'; items: { label: string; href: string }[] };
+  | { type: 'links'; items: { label: string; href: string }[] }
+  | { type: 'qr'; caption: string };
 
 /**
  * Layar isi teks dengan tombol kembali.
@@ -51,6 +52,24 @@ function render(block: InfoBlock): HTMLElement {
         list.append(li);
       }
       return list;
+    }
+    case 'qr': {
+      const figure = document.createElement('figure');
+      figure.className = 'info-qr';
+
+      const caption = document.createElement('figcaption');
+      caption.textContent = block.caption;
+
+      const image = document.createElement('img');
+      image.src = '/qr.svg';
+      image.alt = 'QR code aplikasi Matematika AR';
+      // Alamatnya ikut ditulis supaya tetap berguna kalau QR gagal dipindai.
+      const link = document.createElement('a');
+      link.href = window.location.origin;
+      link.textContent = window.location.host;
+
+      figure.append(caption, image, link);
+      return figure;
     }
     case 'links': {
       const list = document.createElement('ul');

@@ -265,6 +265,11 @@ page.on('response', (response) => {
   if (response.status() === 404) notFound.push(new URL(response.url()).pathname);
 });
 
+// Untuk membuktikan tumpukan AR benar-benar dipisah dan tidak ikut terunduh
+// di kunjungan pertama.
+const requested = [];
+page.on('request', (request) => requested.push(new URL(request.url()).pathname));
+
 const failures = [];
 const check = (ok, label, detail = '') => {
   console.log(`  ${ok ? 'OK  ' : 'GAGAL'} ${label}${detail ? ` — ${detail}` : ''}`);
@@ -300,6 +305,17 @@ try {
   await waitScreen('Matematika AR');
   check(true, 'menu tampil saat aplikasi dibuka');
 
+  // 1a. Menu tidak boleh menyeret Three.js/MindAR. Kalau suatu saat ArScene
+  //     di-import statis lagi, pemisahannya rusak tanpa gejala apa pun
+  //     selain unduhan awal yang membengkak.
+  const arChunk = requested.filter((p) => /ArScene/.test(p));
+  const initialJs = requested.filter((p) => p.endsWith('.js'));
+  check(
+    arChunk.length === 0,
+    'tumpukan AR belum diunduh saat menu tampil',
+    `${initialJs.length} berkas js: ${initialJs.map((p) => p.split('/').pop()).join(', ')}`,
+  );
+
   if (process.env.SMOKE_SHOT) {
     await page.screenshot({ path: process.env.SMOKE_SHOT.replace(/\.png$/, '-menu.png') });
   }
@@ -313,6 +329,16 @@ try {
 
   await page.click('.menu-button:text-is("Tentang")');
   await waitScreen('Tentang');
+  const qrVisible = await page.locator('.info-qr img').isVisible();
+  const qrBox = await page.locator('.info-qr img').boundingBox();
+  check(
+    qrVisible && (qrBox?.width ?? 0) > 50,
+    'QR code tampil di layar Tentang',
+    `${Math.round(qrBox?.width ?? 0)}x${Math.round(qrBox?.height ?? 0)} px`,
+  );
+  if (process.env.SMOKE_SHOT) {
+    await page.screenshot({ path: process.env.SMOKE_SHOT.replace(/\.png$/, '-tentang.png') });
+  }
   await page.click('#screens .screen-panel:visible .menu-button:text-is("Kembali")');
   await waitScreen('Matematika AR');
   check(true, 'Tentang dibuka lalu kembali ke menu');
@@ -335,9 +361,13 @@ try {
   // 2. Kamera + Controller + targets.mind. Kalau registry.bind terlupa,
   //    ARSession.start() melempar dan langkah ini gagal.
   await page.click('.menu-button:text-is("Mulai AR")');
+  // Menunggu status akhir, bukan sekadar "bukan status awal": sejak tumpukan
+  // AR dipisah, ada dua tahap ("Menyiapkan AR" lalu "Menyalakan kamera").
   await page.waitForFunction(
-    () => document.querySelector('#status')?.textContent !== 'Menyalakan kamera...',
-    { timeout: 90_000 },
+    () => /Arahkan kamera|terdeteksi|Gagal|kamera:/i.test(
+      document.querySelector('#status')?.textContent ?? '',
+    ),
+    { timeout: 120_000 },
   );
   const statusAfter = await page.textContent('#status');
   check(

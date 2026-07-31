@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "npm run check:data && tsc && vite build",
+    "build": "npm run check:data && npm run make:qr && tsc && vite build",
     "check:data": "node scripts/check-measurements.mjs",
     "test:smoke": "node scripts/smoke-test.mjs",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
     "compile:targets": "node scripts/compile-targets.mjs",
-    "optimize:model": "node scripts/optimize-model.mjs"
+    "optimize:model": "node scripts/optimize-model.mjs",
+    "make:qr": "node scripts/make-qr.mjs"
   },
   "dependencies": {
     "mind-ar": "^1.2.5",
@@ -30,6 +31,7 @@
     "@types/three": "^0.185.1",
     "draco3dgltf": "^1.5.7",
     "playwright-core": "^1.62.1",
+    "qrcode": "^1.5.4",
     "sharp": "^0.35.3",
     "typescript": "^7.0.2",
     "vite": "^8.2.0"

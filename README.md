@@ -23,6 +23,10 @@ npm run check:data # nilai label vs jarak titik di app-data.json (ikut jalan saa
 # Perlu `npm run build` dulu. SMOKE_SHOT=<file.png> untuk menyimpan tangkapan layar.
 npm run test:smoke -- public/markers/object-1.png
 
+# Perbarui QR code (ikut jalan saat build; di Vercel alamatnya diambil
+# otomatis dari domain produksi, jadi tidak perlu diingat manual)
+npm run make:qr -- https://alamat-anda.vercel.app
+
 # Kompilasi ulang kartu penanda -> public/targets/targets.mind
 # Jalankan hanya kalau gambar di public/markers/ berubah.
 npm run compile:targets
@@ -65,8 +69,8 @@ Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](mate
 - [x] **Fase 4** — Overlay AR: tampilkan/sembunyikan/transparan/reset + saring kategori
 - [x] **Fase 5** — Layar & Router: menu, panduan, tentang, dialog Materi, transisi fade
 - [x] **Fase 6** — Polish: bloom neon, fade transparansi, bunyi klik (musik menunggu berkas)
-- [ ] **Fase 7** — Multi-marker
-- [ ] **Fase 8** — Deploy + QR
+- [ ] **Fase 7** — Multi-marker (dilewati atas permintaan; `maxTrack` tinggal dinaikkan)
+- [x] **Fase 8** — Deploy + QR + pemisahan bundel
 
 ## Dokumentasi
 

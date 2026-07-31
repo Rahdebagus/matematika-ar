@@ -358,3 +358,31 @@ body {
   cursor: pointer;
   touch-action: manipulation;
 }
+
+.info-qr {
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.info-qr figcaption {
+  margin-bottom: 0.6rem;
+  color: rgb(232 236 255 / 0.72);
+}
+
+.info-qr img {
+  width: 11rem;
+  max-width: 60%;
+  height: auto;
+  padding: 0.5rem;
+  border-radius: 0.6rem;
+  /* Latar putih wajib: pemindai butuh kontras terang-gelap. */
+  background: #fff;
+}
+
+.info-qr a {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--accent);
+  font-size: 0.9rem;
+  word-break: break-all;
+}

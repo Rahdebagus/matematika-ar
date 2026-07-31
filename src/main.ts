@@ -1,16 +1,10 @@
-import { App } from './core/App';
-import { ARSession } from './core/ARSession';
 import { Router } from './core/Router';
-import { MarkerRegistry } from './ar/MarkerRegistry';
-import { AnchorController } from './ar/AnchorController';
-import { ModelLoader } from './models/ModelLoader';
-import { ObjectTransform } from './ar/ObjectTransform';
 import { AROverlay } from './ui/AROverlay';
 import { Dialog } from './ui/Dialog';
 import { MenuScreen } from './ui/screens/MenuScreen';
 import { InfoScreen } from './ui/screens/InfoScreen';
 import { AudioManager } from './audio/AudioManager';
-import { loadAppData } from './data/loadAppData';
+import type { ArScene } from './ar/ArScene';
 
 const container = document.querySelector<HTMLDivElement>('#app');
 const arScreen = document.querySelector<HTMLDivElement>('#ar-screen');
@@ -87,6 +81,7 @@ const tentang = new InfoScreen(
       type: 'paragraph',
       text: 'Objek 3D muncul di atas kartu penanda lengkap dengan titik, garis ukur, dan label. Aplikasi berjalan langsung di browser HP tanpa perlu memasang APK.',
     },
+    { type: 'qr', caption: 'Pindai untuk membuka aplikasi ini di HP lain:' },
     {
       type: 'paragraph',
       text: 'Dibuat dengan TypeScript, Three.js, dan MindAR. Versi web ini menggantikan versi Unity dengan logika yang sama.',
@@ -104,130 +99,48 @@ router.register('tentang', tentang.element);
 
 backButton.addEventListener('click', () => router.show('menu'));
 
-async function bootstrap(root: HTMLDivElement): Promise<void> {
-  const app = new App(root);
-  app.start();
+/**
+ * Tumpukan AR (Three.js + MindAR + TensorFlow) diambil hanya saat pengguna
+ * benar-benar membuka layar AR. Menu dan halaman teks tidak memerlukannya.
+ */
+let scenePromise: Promise<ArScene> | null = null;
 
-  const data = await loadAppData('/data/app-data.json');
+router.onEnter('ar', () => {
+  overlay.setStatus('Menyiapkan AR...');
 
-  app.setBloom(data.bloom.enabled ? data.bloom : null);
+  scenePromise ??= import('./ar/ArScene').then((module) =>
+    module.ArScene.create({ container, overlay }),
+  );
 
-  const session = new ARSession({
-    container: root,
-    camera: app.camera,
-    targetsUrl: data.targetsUrl,
-    // Fase 7 menaikkan ini agar beberapa marker terlacak bersamaan.
-    maxTrack: 1,
-  });
-
-  const models = new ModelLoader();
-  const anchors = new Map<number, AnchorController>();
-
-  // Dipasang di canvas, bukan container: sentuhan pada tombol overlay
-  // tidak boleh ikut memutar objek.
-  const transform = new ObjectTransform(app.renderer.domElement, app.camera);
-  overlay.setResetHook(() => transform.reset());
-
-  const registry = new MarkerRegistry(app.scene, {
-    onFound: (targetIndex) => {
-      const anchor = anchors.get(targetIndex);
-      if (!anchor) return;
-
-      overlay.setStatus(`${anchor.object.displayName} terdeteksi`);
-      void showAnchor(anchor);
-    },
-    onLost: () => {
-      // Tombol dimatikan supaya tidak ada aksi tanpa objek aktif.
-      overlay.bind(null);
-      transform.bind(null);
-      overlay.setStatus('Arahkan kamera ke kartu penanda');
-    },
-  });
-
-  for (const object of data.objects) {
-    anchors.set(
-      object.targetIndex,
-      new AnchorController(
-        registry.register(object.targetIndex),
-        object,
-        data.defaultStyle,
-        models,
-        data.markerWidthMeters,
-      ),
-    );
-  }
-
-  // Tanpa ini anchor tidak pernah menerima matriks tracking: objek tetap
-  // tersembunyi dan onFound tidak pernah jalan.
-  registry.bind(session);
-
-  const syncResolution = () => {
-    for (const anchor of anchors.values()) {
-      anchor.measurements?.setResolution(root.clientWidth, root.clientHeight);
-    }
-  };
-
-  /** Isi anchor dimuat saat markernya pertama terlihat, bukan di awal. */
-  async function showAnchor(anchor: AnchorController): Promise<void> {
-    try {
-      await anchor.load();
-      syncResolution();
-
-      // Transparansi dianimasikan, jadi controller ikut render loop.
-      const measurements = anchor.measurements;
-      if (measurements) app.addUpdatable(measurements);
-
-      overlay.bind(measurements);
-      transform.bind(anchor.pivot);
-    } catch (error) {
-      overlay.setStatus(`Gagal memuat ${anchor.object.displayName}`);
+  void scenePromise
+    .then(async (scene) => {
+      // Pengguna bisa saja kembali ke menu sebelum modulnya selesai diunduh.
+      if (router.currentId !== 'ar') return;
+      overlay.setStatus('Menyalakan kamera...');
+      await scene.start();
+      if (router.currentId !== 'ar') scene.stop();
+      else overlay.setStatus('Arahkan kamera ke kartu penanda');
+    })
+    .catch((error: unknown) => {
+      // Gagal memuat tidak boleh dikenang selamanya — biarkan dicoba lagi.
+      scenePromise = null;
+      overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai AR');
       console.error(error);
-    }
-  }
-
-  app.addResizeHandler(() => {
-    session.syncCamera();
-    syncResolution();
-  });
-
-  // Kamera hanya menyala selama layar AR terbuka — menutup halaman menu
-  // dengan kamera tetap hidup boros baterai dan bikin was-was.
-  router.onEnter('ar', () => {
-    overlay.setStatus('Menyalakan kamera...');
-    session.start().then(
-      () => overlay.setStatus('Arahkan kamera ke kartu penanda'),
-      (error: unknown) => {
-        overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai AR');
-        console.error(error);
-      },
-    );
-  });
-
-  router.onExit('ar', () => {
-    session.stop();
-    registry.hideAll();
-    overlay.bind(null);
-  });
-
-  router.show('menu');
-
-  // Hot reload Vite: lepas resource lama agar tidak menumpuk context WebGL.
-  if (import.meta.hot) {
-    import.meta.hot.dispose(() => {
-      session.dispose();
-      for (const anchor of anchors.values()) anchor.dispose();
-      registry.dispose();
-      models.dispose();
-      transform.dispose();
-      overlay.dispose();
-      dialog.dispose();
-      audio.dispose();
-      app.dispose();
     });
-  }
-}
-
-bootstrap(container).catch((error: unknown) => {
-  overlay.setStatus(error instanceof Error ? error.message : 'Gagal memulai aplikasi');
-  console.error(error);
 });
+
+router.onExit('ar', () => {
+  void scenePromise?.then((scene) => scene.stop());
+});
+
+router.show('menu');
+
+// Hot reload Vite: lepas resource lama agar tidak menumpuk context WebGL.
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    void scenePromise?.then((scene) => scene.dispose());
+    overlay.dispose();
+    dialog.dispose();
+    audio.dispose();
+  });
+}
