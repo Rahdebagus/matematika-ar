@@ -21,6 +21,9 @@ npm run typecheck  # tsc --noEmit
 # Kompilasi ulang kartu penanda -> public/targets/targets.mind
 # Jalankan hanya kalau gambar di public/markers/ berubah.
 npm run compile:targets
+
+# Optimasi model Blender/Unity untuk HP (tekstur -> WebP 1024px, geometri Draco)
+npm run optimize:model -- "<sumber.glb>" public/models/<nama>.glb
 ```
 
 > Urutan file di `scripts/compile-targets.mjs` menentukan `targetIndex`
@@ -35,7 +38,7 @@ Roadmap ada di [`matematika-ar-docs/matematika-ar-docs/docs/07-roadmap.md`](mate
 
 - [x] **Fase 0** — Scaffold: Vite + TS + Three, render loop, kubus uji
 - [x] **Fase 1** — Kamera AR: MindAR menyala, 4 marker terlacak, kubus di anchor
-- [ ] **Fase 2** — `ModelLoader` (.glb di atas marker)
+- [x] **Fase 2** — `ModelLoader` (.glb di atas marker) — baru Objek 4 yang punya model
 - [ ] **Fase 3** — Measurement (garis + label dari JSON)
 - [ ] **Fase 4** — Overlay AR
 - [ ] **Fase 5** — Layar & Router

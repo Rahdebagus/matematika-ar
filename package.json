@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
-    "compile:targets": "node scripts/compile-targets.mjs"
+    "compile:targets": "node scripts/compile-targets.mjs",
+    "optimize:model": "node scripts/optimize-model.mjs"
   },
   "dependencies": {
     "mind-ar": "^1.2.5",
@@ -16,11 +17,17 @@
   },
   "//overrides": "mind-ar menarik `canvas` (native). Paket itu tidak punya prebuilt untuk Node 22, jadi npm mencoba meng-compile dari source dan gagal di Vercel. Kita tidak memakainya sama sekali — hanya OfflineCompiler mind-ar yang butuh, dan kita pakai @napi-rs/canvas (prebuilt) di scripts/compile-targets.mjs. API createCanvas-nya kompatibel.",
   "overrides": {
-    "canvas": "npm:@napi-rs/canvas@^1.0.3"
+    "canvas": "npm:@napi-rs/canvas@^1.0.3",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
+    "@gltf-transform/core": "^4.4.2",
+    "@gltf-transform/extensions": "^4.4.2",
+    "@gltf-transform/functions": "^4.4.2",
     "@napi-rs/canvas": "^1.0.3",
     "@types/three": "^0.185.1",
+    "draco3dgltf": "^1.5.7",
+    "sharp": "^0.35.3",
     "typescript": "^7.0.2",
     "vite": "^8.2.0"
   }
