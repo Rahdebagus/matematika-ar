@@ -80,8 +80,26 @@ export interface ObjectData {
   fit?: FitMode; // default "real"
   scale?: number; // pengali tambahan
   /**
+   * Skala GameObject model di bawah ImageTarget, disalin apa adanya dari
+   * Inspector Unity. Boleh satu angka atau per sumbu.
+   *
+   * Ini cara yang eksak. Ekspor .glb membawa geometri model pada skala
+   * aslinya, tapi tidak membawa skala GameObject yang mengecilkannya di
+   * scene Unity — padahal titik ukur direkam pada ukuran yang mengecil itu.
+   * Mengisi angka yang sama di sini membuat keduanya sepakat tanpa menebak.
+   *
+   * Lebih dipercaya daripada `alignModelToPoints`.
+   */
+  modelScale?: number | Vec3;
+
+  /**
    * Skalakan dan geser model agar kotak batasnya berimpit dengan kotak batas
    * titik ukur.
+   *
+   * Cadangan kalau skala Unity-nya tidak diketahui. Hanya tepat bila titik
+   * ukur benar-benar menyentuh tiap sisi model. Kalau model punya lantai,
+   * atap menjuntai, atau bagian lain di luar area yang diukur, kotak batasnya
+   * lebih besar dari yang diukur dan hasilnya meleset.
    *
    * Dipakai saat ekspor .glb tidak sepakat ruang dengan koordinat titik dari
    * Unity. Contoh nyata pada Atap Masjid: vertex-nya ternormalisasi ±1 dengan

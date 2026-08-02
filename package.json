@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "compile:targets": "node scripts/compile-targets.mjs",
     "optimize:model": "node scripts/optimize-model.mjs",
-    "make:qr": "node scripts/make-qr.mjs"
+    "make:qr": "node scripts/make-qr.mjs",
+    "check:fit": "node scripts/check-model-fit.mjs"
   },
   "dependencies": {
     "mind-ar": "^1.2.5",

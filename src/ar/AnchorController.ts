@@ -71,7 +71,15 @@ export class AnchorController {
 
     // Dijalankan sebelum fitToMarker mengukur, supaya kotak batas yang dipakai
     // sudah sepadan dengan koordinat titik ukurnya.
-    if (this.object.alignModelToPoints) this.alignToPoints(model);
+    const { modelScale } = this.object;
+    if (modelScale !== undefined) {
+      const [x, y, z] = typeof modelScale === 'number'
+        ? [modelScale, modelScale, modelScale]
+        : modelScale;
+      model.scale.multiply(new THREE.Vector3(x, y, z));
+    } else if (this.object.alignModelToPoints) {
+      this.alignToPoints(model);
+    }
 
     const { holder, pivot, content } = fitToMarker(model, {
       markerWidthMeters: this.markerWidthMeters,

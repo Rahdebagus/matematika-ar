@@ -129,79 +129,77 @@
     },
     {
       "id": "object-2",
-      "displayName": "Atap Masjid",
+      "displayName": "Object-2",
       "modelUrl": "/models/object-2.glb",
       "targetIndex": 1,
-      "fit": "marker-width",
-      "scale": 1,
       "points": [
         {
           "id": "A",
-          "position": [7.5, 0.25, 7.7]
+          "position": [0.9934, 0.12607, 1.03374]
         },
         {
           "id": "B",
-          "position": [0.15, 0.25, 7.55]
+          "position": [0.07564, 0.12607, 1.01861]
         },
         {
           "id": "C",
-          "position": [-7.88, 0.25, 7.54]
+          "position": [-1.03879, 0.12607, 0.98332]
         },
         {
           "id": "D",
-          "position": [-7.62, 0.25, -7.76]
+          "position": [-0.9934, 0.12607, -1.00853]
         },
         {
           "id": "E",
-          "position": [7.47, 0.25, -7.76]
+          "position": [0.97827, 0.12607, -1.00853]
         },
         {
           "id": "F",
-          "position": [5.98, 1.22, 3.83]
+          "position": [0.84212, 0.6152, 0.48762]
         },
         {
           "id": "G",
-          "position": [0.91, 1.22, 4.06]
+          "position": [0.15632, 0.6152, 0.48409]
         },
         {
           "id": "H",
-          "position": [1.04, 1.22, -5.1]
+          "position": [0.22188, 0.6152, -0.5799]
         },
         {
           "id": "I",
-          "position": [6.14, 1.22, -5.08]
+          "position": [0.84817, 0.6152, -0.66311]
         },
         {
           "id": "J",
-          "position": [3.14, 1.22, 1.72]
+          "position": [0.42156, 0.6152, 0.19717]
         },
         {
           "id": "K",
-          "position": [3.27, 1.22, -2.36]
+          "position": [0.43417, 0.6152, -0.29096]
         },
         {
           "id": "L",
-          "position": [-0.36, 1.22, 2.63]
+          "position": [0.01513, 0.6152, 0.40997]
         },
         {
           "id": "M",
-          "position": [-4.35, 1.22, 2.8]
+          "position": [-0.63033, 0.6152, 0.43871]
         },
         {
           "id": "N",
-          "position": [-4.29, 1.22, -3.68]
+          "position": [-0.60008, 0.6152, -0.54965]
         },
         {
           "id": "O",
-          "position": [-0.56, 1.22, -3.72]
+          "position": [0.00504, 0.6152, -0.56982]
         },
         {
           "id": "P",
-          "position": [-2.27, 1.22, -1.51]
+          "position": [-0.29752, 0.6152, -0.16237]
         },
         {
           "id": "Q",
-          "position": [-2.24, 1.22, 0.96]
+          "position": [-0.29903, 0.6152, 0.11749]
         }
       ],
       "measurements": [
@@ -406,113 +404,351 @@
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02
       },
-      "measurementTolerance": 0.15,
+      "fit": "marker-width",
       "alignModelToPoints": true,
-      "draft": true
+      "draft": true,
+      "measurementTolerance": 0.15
     },
     {
-      "id": "kubus-besar",
-      "displayName": "Kubus 15 cm",
-      "primitive": {
-        "type": "box",
-        "size": [0.15, 0.15, 0.15],
-        "opacity": 0.35
-      },
+      "id": "object-3",
+      "displayName": "Object-3",
+      "modelUrl": "/models/object-3.glb",
       "targetIndex": 2,
-      "style": {
-        "lineColor": "#FFC24B",
-        "arrowLength": 0.012,
-        "arrowHalfWidth": 0.0045
-      },
       "points": [
         {
           "id": "A",
-          "position": [-0.075, 0, -0.075]
+          "position": [0.94, -0.86, -0.44]
         },
         {
           "id": "B",
-          "position": [0.075, 0, -0.075]
+          "position": [0.94, -0.86, 0.67]
         },
         {
           "id": "C",
-          "position": [0.075, 0, 0.075]
+          "position": [-0.9, -0.86, 0.66]
         },
         {
           "id": "D",
-          "position": [-0.075, 0, 0.075]
+          "position": [-0.91, -0.86, -0.473]
         },
         {
           "id": "E",
-          "position": [-0.075, 0.15, -0.075]
+          "position": [0.94, 1.08, -0.44]
         },
         {
           "id": "F",
-          "position": [0.075, 0.15, -0.075]
+          "position": [0.94, 1.08, 0.67]
         },
         {
           "id": "G",
-          "position": [0.075, 0.15, 0.075]
+          "position": [-0.9, 1.08, 0.66]
         },
         {
           "id": "H",
-          "position": [-0.075, 0.15, 0.075]
+          "position": [-0.91, 1.08, -0.473]
+        },
+        {
+          "id": "P",
+          "position": [0.049, 1.08, -0.405]
         }
       ],
       "measurements": [
         {
-          "id": "DC",
-          "from": "D",
+          "id": "AB",
+          "from": "A",
+          "to": "B",
+          "value": "2,6",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "BC",
+          "from": "B",
           "to": "C",
-          "displayName": "Rusuk",
-          "symbol": "s",
-          "value": "15",
-          "unit": "cm",
-          "category": "Rusuk",
+          "value": "3,95",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "AE",
+          "from": "A",
+          "to": "E",
+          "value": "3",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "C",
+          "from": "C",
+          "to": "D",
+          "value": "2,6",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "DA",
+          "from": "D",
+          "to": "A",
+          "value": "115",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "BF",
+          "from": "B",
+          "to": "F",
+          "value": "3",
+          "unit": "m",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
           "id": "CG",
           "from": "C",
           "to": "G",
-          "displayName": "Tinggi",
-          "symbol": "t",
-          "value": "15",
-          "unit": "cm",
-          "category": "Rusuk",
+          "value": "3",
+          "unit": "m",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
-          "id": "DB",
+          "id": "DH",
           "from": "D",
-          "to": "B",
-          "displayName": "Diagonal sisi",
-          "symbol": "ds",
-          "value": "21,2",
-          "unit": "cm",
-          "category": "Diagonal",
-          "visibleOnStart": false
+          "to": "H",
+          "value": "3",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
         },
         {
-          "id": "DF",
-          "from": "D",
+          "id": "EF",
+          "from": "E",
           "to": "F",
-          "displayName": "Diagonal ruang",
-          "symbol": "dr",
-          "value": "26,0",
-          "unit": "cm",
-          "category": "Diagonal",
-          "visibleOnStart": false
+          "value": "2,6",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "GH",
+          "from": "G",
+          "to": "H",
+          "value": "2,6",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "GF",
+          "from": "G",
+          "to": "F",
+          "value": "3,95",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "HE",
+          "from": "H",
+          "to": "E",
+          "value": "3,95",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
         }
-      ]
+      ],
+      "style": {
+        "lineColor": "#FF3000",
+        "lineWidth": 3,
+        "labelColor": "#FFFFFF",
+        "labelFontSize": 13,
+        "showArrows": false,
+        "arrowLength": 0.02,
+        "arrowHalfWidth": 0.02
+      },
+      "fit": "marker-width",
+      "alignModelToPoints": true,
+      "draft": true,
+      "measurementTolerance": 0.15
     },
     {
-      "id": "objek-4",
-      "displayName": "Objek 4",
+      "id": "object-4",
+      "displayName": "Object-4",
       "modelUrl": "/models/object-4.glb",
       "targetIndex": 3,
-      "points": [],
-      "measurements": [],
-      "fit": "marker-width"
+      "points": [
+        {
+          "id": "A",
+          "position": [0.467, -0.22, -0.455]
+        },
+        {
+          "id": "B",
+          "position": [0.466, -0.22, 0.54]
+        },
+        {
+          "id": "C",
+          "position": [-0.437, -0.22, 0.53]
+        },
+        {
+          "id": "D",
+          "position": [-0.447, -0.22, -0.451]
+        },
+        {
+          "id": "E",
+          "position": [0.467, 0.87, -0.455]
+        },
+        {
+          "id": "F",
+          "position": [0.466, 0.87, 0.54]
+        },
+        {
+          "id": "G",
+          "position": [-0.437, 0.87, 0.53]
+        },
+        {
+          "id": "H",
+          "position": [-0.447, 0.87, -0.451]
+        },
+        {
+          "id": "P",
+          "position": [-0.001, 0.87, -0.374]
+        }
+      ],
+      "measurements": [
+        {
+          "id": "AB",
+          "from": "A",
+          "to": "B",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "BC",
+          "from": "B",
+          "to": "C",
+          "value": "2,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "AE",
+          "from": "A",
+          "to": "E",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "C",
+          "from": "C",
+          "to": "D",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "DA",
+          "from": "D",
+          "to": "A",
+          "value": "2,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "BF",
+          "from": "B",
+          "to": "F",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "CG",
+          "from": "C",
+          "to": "G",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "DH",
+          "from": "D",
+          "to": "H",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "EF",
+          "from": "E",
+          "to": "F",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "GH",
+          "from": "G",
+          "to": "H",
+          "value": "3,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "GF",
+          "from": "G",
+          "to": "F",
+          "value": "2,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "HE",
+          "from": "H",
+          "to": "E",
+          "value": "2,4",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "P",
+          "from": "P",
+          "to": "P",
+          "showPointPair": true,
+          "visibleOnStart": true
+        }
+      ],
+      "style": {
+        "lineColor": "#FF3000",
+        "lineWidth": 3,
+        "labelColor": "#FFFFFF",
+        "labelFontSize": 13,
+        "showArrows": false,
+        "arrowLength": 0.02,
+        "arrowHalfWidth": 0.02
+      },
+      "fit": "marker-width",
+      "alignModelToPoints": true,
+      "draft": true,
+      "measurementTolerance": 0.15
     }
   ]
 }
