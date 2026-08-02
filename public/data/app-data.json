@@ -405,9 +405,9 @@
         "arrowHalfWidth": 0.02
       },
       "fit": "marker-width",
-      "alignModelToPoints": true,
       "draft": true,
-      "measurementTolerance": 0.15
+      "measurementTolerance": 0.15,
+      "modelScale": 0.5
     },
     {
       "id": "object-3",
@@ -572,9 +572,9 @@
         "arrowHalfWidth": 0.02
       },
       "fit": "marker-width",
-      "alignModelToPoints": true,
       "draft": true,
-      "measurementTolerance": 0.15
+      "measurementTolerance": 0.15,
+      "modelScale": 0.5
     },
     {
       "id": "object-4",
@@ -746,9 +746,9 @@
         "arrowHalfWidth": 0.02
       },
       "fit": "marker-width",
-      "alignModelToPoints": true,
       "draft": true,
-      "measurementTolerance": 0.15
+      "measurementTolerance": 0.15,
+      "modelScale": 0.5
     }
   ]
 }
