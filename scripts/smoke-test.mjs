@@ -406,6 +406,18 @@ try {
     });
     check(meshes, 'canvas 3D aktif');
 
+    // Model .glb besar butuh waktu diunduh dan didekode, jadi garis ukurnya
+    // belum ada tepat saat marker terdeteksi. Untuk bentuk primitif ini
+    // instan — itu sebabnya balapan waktu ini lama tidak ketahuan.
+    await page
+      .waitForFunction(
+        (expected) =>
+          document.querySelectorAll('.measurement-label').length === expected,
+        EXPECT_LABELS,
+        { timeout: 30_000 },
+      )
+      .catch(() => undefined);
+
     const labels = await page.locator('.measurement-label').count();
     check(
       labels === EXPECT_LABELS,

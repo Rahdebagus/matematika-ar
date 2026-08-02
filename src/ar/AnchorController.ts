@@ -68,6 +68,11 @@ export class AnchorController {
 
   private async doLoad(): Promise<void> {
     const model = await this.buildModel();
+
+    // Dijalankan sebelum fitToMarker mengukur, supaya kotak batas yang dipakai
+    // sudah sepadan dengan koordinat titik ukurnya.
+    if (this.object.alignModelToPoints) this.alignToPoints(model);
+
     const { holder, pivot, content } = fitToMarker(model, {
       markerWidthMeters: this.markerWidthMeters,
       mode: this.object.fit,
@@ -79,6 +84,37 @@ export class AnchorController {
     const style: MeasurementStyle = { ...this.style, ...this.object.style };
     this.controller = new MeasurementController(content, this.object, style, model);
     this.controller.build();
+  }
+
+  /**
+   * Menyamakan kotak batas model dengan kotak batas titik ukur.
+   *
+   * Skalanya seragam dan diambil dari sumbu yang rentangnya paling besar —
+   * sumbu itu paling kecil galat relatifnya. Memakai skala per sumbu akan
+   * memelarkan model kalau titiknya tidak persis menyentuh tiap sisi.
+   */
+  private alignToPoints(model: THREE.Object3D): void {
+    const points = this.object.points;
+    if (points.length < 2) return;
+
+    const target = new THREE.Box3();
+    for (const point of points) {
+      target.expandByPoint(new THREE.Vector3(...point.position));
+    }
+
+    const source = new THREE.Box3().setFromObject(model);
+    const targetSize = target.getSize(new THREE.Vector3());
+    const sourceSize = source.getSize(new THREE.Vector3());
+
+    const axis = targetSize.x >= targetSize.z ? 'x' : 'z';
+    if (sourceSize[axis] <= 0) return;
+    model.scale.multiplyScalar(targetSize[axis] / sourceSize[axis]);
+
+    // Diukur ulang setelah skala berubah, lalu digeser agar pusatnya berimpit.
+    const scaled = new THREE.Box3().setFromObject(model);
+    model.position.add(
+      target.getCenter(new THREE.Vector3()).sub(scaled.getCenter(new THREE.Vector3())),
+    );
   }
 
   private async buildModel(): Promise<THREE.Object3D> {

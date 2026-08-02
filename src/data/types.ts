@@ -68,8 +68,33 @@ export interface ObjectData {
   modelUrl?: string | null;
   primitive?: PrimitiveData;
   targetIndex: number;
+  /**
+   * Angka ukurnya masih diverifikasi.
+   *
+   * `npm run check:data` tetap melaporkan ketidakcocokan, tapi tidak
+   * menggagalkan build. Dipakai selama objek masih diuji coba, supaya bisa
+   * dibandingkan langsung dengan tampilan Unity di HP. Hapus setelah
+   * angkanya benar — jangan dibiarkan menetap.
+   */
+  draft?: boolean;
   fit?: FitMode; // default "real"
   scale?: number; // pengali tambahan
+  /**
+   * Skalakan dan geser model agar kotak batasnya berimpit dengan kotak batas
+   * titik ukur.
+   *
+   * Dipakai saat ekspor .glb tidak sepakat ruang dengan koordinat titik dari
+   * Unity. Contoh nyata pada Atap Masjid: vertex-nya ternormalisasi ±1 dengan
+   * scale simpul 1,983 (tapak 3,97) plus offset Y bawaan, sedangkan titiknya
+   * memakai satuan Unity dengan tapak 15,46. Tanpa penyelarasan, garis ukur
+   * melayang jauh dari atapnya.
+   *
+   * Titik adalah acuan pengukuran, jadi model yang menyesuaikan. Faktornya
+   * diturunkan dari data, bukan angka yang ditebak dan ditulis manual.
+   *
+   * Idealnya tidak perlu: benahi saja skala model saat ekspor dari Unity.
+   */
+  alignModelToPoints?: boolean;
   points: PointData[];
   measurements: MeasurementDef[];
   style?: Partial<MeasurementStyle>;

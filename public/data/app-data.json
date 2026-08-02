@@ -128,105 +128,287 @@
       ]
     },
     {
-      "id": "balok",
-      "displayName": "Balok 12x8x6 cm",
-      "primitive": {
-        "type": "box",
-        "size": [0.12, 0.06, 0.08],
-        "opacity": 0.35
-      },
+      "id": "object-2",
+      "displayName": "Atap Masjid",
+      "modelUrl": "/models/object-2.glb",
       "targetIndex": 1,
+      "fit": "marker-width",
+      "scale": 1,
       "points": [
         {
           "id": "A",
-          "position": [-0.06, 0, -0.04]
+          "position": [7.5, 0.25, 7.7]
         },
         {
           "id": "B",
-          "position": [0.06, 0, -0.04]
+          "position": [0.15, 0.25, 7.55]
         },
         {
           "id": "C",
-          "position": [0.06, 0, 0.04]
+          "position": [-7.88, 0.25, 7.54]
         },
         {
           "id": "D",
-          "position": [-0.06, 0, 0.04]
+          "position": [-7.62, 0.25, -7.76]
         },
         {
           "id": "E",
-          "position": [-0.06, 0.06, -0.04]
+          "position": [7.47, 0.25, -7.76]
         },
         {
           "id": "F",
-          "position": [0.06, 0.06, -0.04]
+          "position": [5.98, 1.22, 3.83]
         },
         {
           "id": "G",
-          "position": [0.06, 0.06, 0.04]
+          "position": [0.91, 1.22, 4.06]
         },
         {
           "id": "H",
-          "position": [-0.06, 0.06, 0.04]
+          "position": [1.04, 1.22, -5.1]
+        },
+        {
+          "id": "I",
+          "position": [6.14, 1.22, -5.08]
+        },
+        {
+          "id": "J",
+          "position": [3.14, 1.22, 1.72]
+        },
+        {
+          "id": "K",
+          "position": [3.27, 1.22, -2.36]
+        },
+        {
+          "id": "L",
+          "position": [-0.36, 1.22, 2.63]
+        },
+        {
+          "id": "M",
+          "position": [-4.35, 1.22, 2.8]
+        },
+        {
+          "id": "N",
+          "position": [-4.29, 1.22, -3.68]
+        },
+        {
+          "id": "O",
+          "position": [-0.56, 1.22, -3.72]
+        },
+        {
+          "id": "P",
+          "position": [-2.27, 1.22, -1.51]
+        },
+        {
+          "id": "Q",
+          "position": [-2.24, 1.22, 0.96]
         }
       ],
       "measurements": [
         {
+          "id": "AB",
+          "from": "A",
+          "to": "B",
+          "value": "8",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "BC",
+          "from": "B",
+          "to": "C",
+          "value": "9",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "AE",
+          "from": "A",
+          "to": "E",
+          "value": "17",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "ED",
+          "from": "E",
+          "to": "D",
+          "value": "17",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
           "id": "DC",
           "from": "D",
           "to": "C",
-          "displayName": "Panjang",
-          "symbol": "p",
-          "value": "12",
-          "unit": "cm",
-          "category": "Rusuk",
+          "value": "17",
+          "unit": "m",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
-          "id": "CB",
-          "from": "C",
-          "to": "B",
-          "displayName": "Lebar",
-          "symbol": "l",
-          "value": "8",
-          "unit": "cm",
-          "category": "Rusuk",
-          "visibleOnStart": true
-        },
-        {
-          "id": "CG",
-          "from": "C",
+          "id": "FG",
+          "from": "F",
           "to": "G",
-          "displayName": "Tinggi",
-          "symbol": "t",
-          "value": "6",
-          "unit": "cm",
-          "category": "Rusuk",
+          "value": "2,6",
+          "unit": "m",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
-          "id": "DB",
-          "from": "D",
-          "to": "B",
-          "displayName": "Diagonal alas",
-          "symbol": "da",
-          "value": "14,4",
-          "unit": "cm",
-          "category": "Diagonal",
-          "visibleOnStart": false
+          "id": "GH",
+          "from": "G",
+          "to": "H",
+          "value": "3,95",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
         },
         {
-          "id": "DF",
-          "from": "D",
+          "id": "JK",
+          "from": "J",
+          "to": "K",
+          "value": "3",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "HI",
+          "from": "H",
+          "to": "I",
+          "value": "2,6",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "FI",
+          "from": "F",
+          "to": "I",
+          "value": "3.95",
+          "unit": "m",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "JF",
+          "from": "J",
           "to": "F",
-          "displayName": "Diagonal ruang",
-          "symbol": "dr",
-          "value": "15,6",
-          "unit": "cm",
-          "category": "Diagonal",
-          "visibleOnStart": false
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "JG",
+          "from": "J",
+          "to": "G",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "KI",
+          "from": "K",
+          "to": "I",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "KH",
+          "from": "K",
+          "to": "H",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "LM",
+          "from": "L",
+          "to": "M",
+          "value": "2,6",
+          "unit": "M",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "MN",
+          "from": "M",
+          "to": "N",
+          "value": "3,4",
+          "unit": "M",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "PQ",
+          "from": "P",
+          "to": "Q",
+          "value": "2",
+          "unit": "M",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "NO",
+          "from": "N",
+          "to": "O",
+          "value": "2,6",
+          "unit": "M",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "OL",
+          "from": "O",
+          "to": "L",
+          "value": "3,4",
+          "unit": "M",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "PN",
+          "from": "P",
+          "to": "N",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "QL",
+          "from": "Q",
+          "to": "L",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "QM",
+          "from": "Q",
+          "to": "M",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "PO",
+          "from": "P",
+          "to": "O",
+          "showPointPair": true,
+          "visibleOnStart": true
         }
-      ]
+      ],
+      "style": {
+        "lineColor": "#FF3000",
+        "lineWidth": 3,
+        "labelColor": "#FFFFFF",
+        "labelFontSize": 13,
+        "showArrows": false,
+        "arrowLength": 0.02,
+        "arrowHalfWidth": 0.02
+      },
+      "measurementTolerance": 0.15,
+      "alignModelToPoints": true,
+      "draft": true
     },
     {
       "id": "kubus-besar",
