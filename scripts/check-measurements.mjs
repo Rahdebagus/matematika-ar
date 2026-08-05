@@ -10,8 +10,16 @@
  */
 import { readFileSync } from 'node:fs';
 
-/** Toleransi mutlak untuk bentuk geometris, tempat model = matematikanya. */
-const TOLERANCE_M = 0.0005;
+/**
+ * Toleransi mutlak untuk bentuk geometris, tempat model = matematikanya.
+ *
+ * 1 cm, bukan lebih ketat, karena angka pada label ditulis dua desimal dalam
+ * meter — "7,79" untuk 7,7854 m sudah meleset 5 mm hanya karena pembulatan.
+ * Ambang yang lebih rapat akan menuduh data yang justru paling benar.
+ * Kesalahan sungguhan yang pernah ditemukan berkisar 24-157%, jauh di atas
+ * ini, jadi 1 cm tetap menangkap semuanya.
+ */
+const TOLERANCE_M = 0.01;
 const file = process.argv[2] ?? 'public/data/app-data.json';
 const data = JSON.parse(readFileSync(file, 'utf8'));
 
@@ -54,6 +62,12 @@ let warned = 0;
 for (const object of data.objects) {
   const points = new Map(object.points.map((p) => [p.id, p.position]));
 
+  // Koordinat titik memakai satuan model, bukan meter. Tanpa mengalikannya
+  // dengan kalibrasi, setiap ukuran akan terlihat meleset dengan persentase
+  // yang sama persis — data yang justru paling konsisten malah tampak paling
+  // salah.
+  const metersPerUnit = object.metersPerUnit ?? 1;
+
   for (const m of object.measurements) {
     if (m.value === undefined || m.from === m.to) continue;
 
@@ -72,7 +86,7 @@ for (const object of data.objects) {
       continue;
     }
 
-    const actual = distance(from, to);
+    const actual = distance(from, to) * metersPerUnit;
     checked++;
 
     if (Math.abs(actual - expected) > toleranceFor(object, expected)) {

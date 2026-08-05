@@ -309,7 +309,7 @@
           "id": "AB",
           "from": "A",
           "to": "B",
-          "value": "8",
+          "value": "7,79",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -318,7 +318,7 @@
           "id": "BC",
           "from": "B",
           "to": "C",
-          "value": "9",
+          "value": "9,00",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -327,7 +327,7 @@
           "id": "AE",
           "from": "A",
           "to": "E",
-          "value": "17",
+          "value": "17,15",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -336,7 +336,7 @@
           "id": "ED",
           "from": "E",
           "to": "D",
-          "value": "17",
+          "value": "17,19",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -345,7 +345,7 @@
           "id": "DC",
           "from": "D",
           "to": "C",
-          "value": "17",
+          "value": "17,13",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -354,7 +354,7 @@
           "id": "FG",
           "from": "F",
           "to": "G",
-          "value": "2,6",
+          "value": "4,15",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -363,7 +363,7 @@
           "id": "GH",
           "from": "G",
           "to": "H",
-          "value": "3,95",
+          "value": "6,09",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -372,7 +372,7 @@
           "id": "JK",
           "from": "J",
           "to": "K",
-          "value": "3",
+          "value": "1,96",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -381,7 +381,7 @@
           "id": "HI",
           "from": "H",
           "to": "I",
-          "value": "2,6",
+          "value": "3,63",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -390,7 +390,7 @@
           "id": "FI",
           "from": "F",
           "to": "I",
-          "value": "3.95",
+          "value": "6,24",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -399,6 +399,8 @@
           "id": "JF",
           "from": "J",
           "to": "F",
+          "value": "3,16",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -406,6 +408,8 @@
           "id": "JG",
           "from": "J",
           "to": "G",
+          "value": "2,64",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -413,6 +417,8 @@
           "id": "KI",
           "from": "K",
           "to": "I",
+          "value": "2,98",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -420,6 +426,8 @@
           "id": "KH",
           "from": "K",
           "to": "H",
+          "value": "2,72",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -427,8 +435,8 @@
           "id": "LM",
           "from": "L",
           "to": "M",
-          "value": "2,6",
-          "unit": "M",
+          "value": "2,96",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -436,8 +444,8 @@
           "id": "MN",
           "from": "M",
           "to": "N",
-          "value": "3,4",
-          "unit": "M",
+          "value": "6,39",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -445,8 +453,8 @@
           "id": "PQ",
           "from": "P",
           "to": "Q",
-          "value": "2",
-          "unit": "M",
+          "value": "3,32",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -454,8 +462,8 @@
           "id": "NO",
           "from": "N",
           "to": "O",
-          "value": "2,6",
-          "unit": "M",
+          "value": "2,86",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -463,8 +471,8 @@
           "id": "OL",
           "from": "O",
           "to": "L",
-          "value": "3,4",
-          "unit": "M",
+          "value": "6,58",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -472,6 +480,8 @@
           "id": "PN",
           "from": "P",
           "to": "N",
+          "value": "1,95",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -479,6 +489,8 @@
           "id": "QL",
           "from": "Q",
           "to": "L",
+          "value": "2,19",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -486,6 +498,8 @@
           "id": "QM",
           "from": "Q",
           "to": "M",
+          "value": "2,35",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -493,6 +507,8 @@
           "id": "PO",
           "from": "P",
           "to": "O",
+          "value": "2,12",
+          "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
         }
@@ -507,8 +523,6 @@
         "arrowHalfWidth": 0.02
       },
       "fit": "marker-width",
-      "draft": true,
-      "measurementTolerance": 0.15,
       "metersPerUnit": 3.809
     },
     {
