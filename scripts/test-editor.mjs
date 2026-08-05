@@ -90,6 +90,34 @@ try {
     `${distanceBefore?.trim()} -> ${distanceAfter?.trim()}`,
   );
 
+  // Berpindah objek tidak boleh membuang suntingan objek sebelumnya.
+  // Sebelum diperbaiki, suntingan hilang diam-diam dan baru ketahuan setelah
+  // berkasnya diunduh — kerja yang sudah dilakukan lenyap tanpa peringatan.
+  const objectSelect = page.locator('header select').first();
+  const options = await objectSelect.locator('option').count();
+  if (options > 1) {
+    const firstValue = await objectSelect.inputValue();
+    const otherValue = await objectSelect.locator('option').nth(1).getAttribute('value');
+
+    await objectSelect.selectOption(otherValue);
+    await page.waitForFunction(
+      () => /siap\.$/.test(document.querySelector('.status')?.textContent ?? ''),
+      { timeout: 60_000 },
+    );
+    await objectSelect.selectOption(firstValue);
+    await page.waitForFunction(
+      () => /siap\.$/.test(document.querySelector('.status')?.textContent ?? ''),
+      { timeout: 60_000 },
+    );
+
+    const kept = await pointCount();
+    check(
+      kept === after,
+      'suntingan tetap ada setelah berpindah objek dan kembali',
+      `${after} -> ${kept} titik`,
+    );
+  }
+
   // Unduhan JSON harus berisi titik yang barusan ditambahkan.
   const [download] = await Promise.all([
     page.waitForEvent('download', { timeout: 15_000 }),

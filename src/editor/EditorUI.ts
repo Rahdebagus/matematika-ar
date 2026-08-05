@@ -167,8 +167,35 @@ export class EditorUI {
 
   private pairSelects: HTMLSelectElement[] = [];
   private readonly coordInputs = new Map<string, HTMLInputElement[]>();
+  /** Objek aktif sudah selesai dimuat, jadi keadaannya layak disimpan. */
+  private loaded = false;
+
+  /**
+   * Menyimpan keadaan objek yang sedang dibuka kembali ke `this.data`.
+   *
+   * Wajib dipanggil sebelum berpindah objek. Tanpa ini, suntingan objek
+   * sebelumnya hilang begitu saja saat pengguna memilih objek lain — tanpa
+   * peringatan apa pun, dan baru ketahuan setelah berkasnya diunduh.
+   */
+  private commitActive(): void {
+    if (!this.loaded) return;
+
+    const updated: ObjectData = {
+      ...this.active,
+      metersPerUnit: this.metersPerUnit,
+      points: this.scene.getPoints(),
+      measurements: this.scene.getMeasurements(),
+    };
+    this.data = {
+      ...this.data,
+      objects: this.data.objects.map((o) => (o.id === updated.id ? updated : o)),
+    };
+    this.active = updated;
+  }
 
   private async loadObject(object: ObjectData): Promise<void> {
+    this.commitActive();
+    this.loaded = false;
     this.active = object;
     this.status.textContent = `Memuat ${object.displayName}...`;
 
@@ -176,6 +203,7 @@ export class EditorUI {
       await this.scene.load(object);
       this.calibrationInput.value = String(object.metersPerUnit ?? 1);
       this.unitSelect.value = object.measurements[0]?.unit?.toLowerCase() === 'cm' ? 'cm' : 'm';
+      this.loaded = true;
       this.status.textContent = `${object.displayName} siap.`;
       this.refresh();
     } catch (error) {
@@ -345,20 +373,13 @@ export class EditorUI {
   }
 
   private download(): void {
-    const updated: ObjectData = {
-      ...this.active,
-      metersPerUnit: this.metersPerUnit,
-      points: this.scene.getPoints(),
-      measurements: this.scene.getMeasurements(),
-    };
+    // Semua objek yang pernah disunting ikut terbawa, bukan hanya yang
+    // sedang dibuka.
+    this.commitActive();
 
-    const output: AppData = {
-      ...this.data,
-      objects: this.data.objects.map((o) => (o.id === updated.id ? updated : o)),
-    };
-    this.data = output;
-
-    const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(this.data, null, 2)], {
+      type: 'application/json',
+    });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'app-data.json';
