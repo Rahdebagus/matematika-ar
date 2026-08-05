@@ -369,7 +369,15 @@ export class EditorUI {
       }),
     );
     this.renderMeasurements();
-    this.status.textContent = 'Semua angka diisi ulang dari kalibrasi.';
+
+    // Kalibrasi 1 berarti angka yang terisi adalah satuan model mentah, bukan
+    // meter. Diam-diam itu menghasilkan label seperti "0,83 m" untuk jarak
+    // yang sebenarnya beberapa meter — persis jenis kesalahan yang editor ini
+    // seharusnya cegah.
+    this.status.textContent =
+      this.metersPerUnit === 1
+        ? 'Terisi, TAPI kalibrasi masih 1 — angkanya satuan model, bukan meter. Isi kalibrasi dulu lalu ulangi.'
+        : 'Semua angka diisi ulang dari kalibrasi.';
   }
 
   private download(): void {
