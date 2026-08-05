@@ -19,113 +19,214 @@
   },
   "objects": [
     {
-      "id": "kubus",
-      "displayName": "Kubus 10 cm",
-      "primitive": {
-        "type": "box",
-        "size": [0.1, 0.1, 0.1],
-        "opacity": 0.35
-      },
+      "id": "object-1",
+      "displayName": "Object-1",
+      "modelUrl": "/models/object-1.glb",
       "targetIndex": 0,
       "points": [
         {
           "id": "A",
-          "position": [-0.05, 0, -0.05]
+          "position": [2.33, -1.674, 2.46]
         },
         {
           "id": "B",
-          "position": [0.05, 0, -0.05]
+          "position": [-2.3, -1.674, 2.46]
         },
         {
           "id": "C",
-          "position": [0.05, 0, 0.05]
+          "position": [-2.35, -1.674, -2.26]
         },
         {
           "id": "D",
-          "position": [-0.05, 0, 0.05]
+          "position": [2.33, -1.674, -2.26]
         },
         {
           "id": "E",
-          "position": [-0.05, 0.1, -0.05]
+          "position": [2.33, 2.46, 2.46]
         },
         {
           "id": "F",
-          "position": [0.05, 0.1, -0.05]
+          "position": [-2.3, 2.46, 2.46]
         },
         {
           "id": "G",
-          "position": [0.05, 0.1, 0.05]
+          "position": [-2.35, 2.46, -2.26]
         },
         {
           "id": "H",
-          "position": [-0.05, 0.1, 0.05]
+          "position": [2.33, 2.46, -2.26]
+        },
+        {
+          "id": "I",
+          "position": [1.16, 2.69, 0.02]
+        },
+        {
+          "id": "J",
+          "position": [-1.08, 2.68, 0.02]
+        },
+        {
+          "id": "K",
+          "position": [1.46, 1.35, -0.07]
+        },
+        {
+          "id": "L",
+          "position": [1.46, -0.77, -0.07]
         }
       ],
       "measurements": [
         {
-          "id": "DC",
-          "from": "D",
-          "to": "C",
-          "displayName": "Rusuk",
-          "symbol": "s",
-          "value": "10",
-          "unit": "cm",
-          "category": "Rusuk",
+          "id": "AB",
+          "from": "A",
+          "to": "B",
+          "displayName": "L",
+          "value": "145",
+          "unit": "CM",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
-          "id": "CB",
+          "id": "BC",
+          "from": "B",
+          "to": "C",
+          "displayName": "p",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "CD",
           "from": "C",
-          "to": "B",
-          "displayName": "Rusuk",
-          "symbol": "s",
-          "value": "10",
-          "unit": "cm",
-          "category": "Rusuk",
+          "to": "D",
+          "displayName": "L",
+          "value": "145",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "DA",
+          "from": "D",
+          "to": "A",
+          "displayName": "p",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "EF",
+          "from": "E",
+          "to": "F",
+          "displayName": "L",
+          "value": "145",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "GH",
+          "from": "G",
+          "to": "H",
+          "displayName": "L",
+          "value": "145",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "FG",
+          "from": "F",
+          "to": "G",
+          "displayName": "9",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "HE",
+          "from": "H",
+          "to": "E",
+          "displayName": "p",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "AE",
+          "from": "A",
+          "to": "E",
+          "displayName": "T",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
+        },
+        {
+          "id": "BF",
+          "from": "B",
+          "to": "F",
+          "displayName": "T",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
           "id": "CG",
           "from": "C",
           "to": "G",
-          "displayName": "Tinggi",
-          "symbol": "t",
-          "value": "10",
-          "unit": "cm",
-          "category": "Rusuk",
+          "displayName": "T",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
           "visibleOnStart": true
         },
         {
-          "id": "DB",
+          "id": "DH",
           "from": "D",
-          "to": "B",
-          "displayName": "Diagonal sisi",
-          "symbol": "ds",
-          "value": "14,1",
-          "unit": "cm",
-          "category": "Diagonal",
-          "visibleOnStart": false
+          "to": "H",
+          "displayName": "T",
+          "value": "185",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
         },
         {
-          "id": "DF",
-          "from": "D",
-          "to": "F",
-          "displayName": "Diagonal ruang",
-          "symbol": "dr",
-          "value": "17,3",
-          "unit": "cm",
-          "category": "Diagonal",
-          "visibleOnStart": false
+          "id": "IJ",
+          "from": "I",
+          "to": "J",
+          "displayName": "D",
+          "value": "100",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
         },
         {
-          "id": "G",
-          "from": "G",
-          "to": "G",
-          "displayName": "Titik G",
-          "category": "Titik",
-          "visibleOnStart": false
+          "id": "KL",
+          "from": "K",
+          "to": "L",
+          "displayName": "T",
+          "value": "148",
+          "unit": "CM",
+          "showPointPair": true,
+          "visibleOnStart": true
         }
-      ]
+      ],
+      "style": {
+        "lineColor": "#FF3000",
+        "lineWidth": 3,
+        "labelColor": "#FFFFFF",
+        "labelFontSize": 13,
+        "showArrows": false,
+        "arrowLength": 0.02,
+        "arrowHalfWidth": 0.02
+      },
+      "fit": "marker-width",
+      "draft": true,
+      "measurementTolerance": 0.15
     },
     {
       "id": "object-2",
@@ -135,71 +236,71 @@
       "points": [
         {
           "id": "A",
-          "position": [0.9934, 0.12607, 1.03374]
+          "position": [1.97, 0.25, 2.05]
         },
         {
           "id": "B",
-          "position": [0.07564, 0.12607, 1.01861]
+          "position": [0.15, 0.25, 1.9]
         },
         {
           "id": "C",
-          "position": [-1.03879, 0.12607, 0.98332]
+          "position": [-2.06, 0.25, 1.89]
         },
         {
           "id": "D",
-          "position": [-0.9934, 0.12607, -1.00853]
+          "position": [-1.8, 0.25, -2]
         },
         {
           "id": "E",
-          "position": [0.97827, 0.12607, -1.00853]
+          "position": [1.94, 0.25, -2]
         },
         {
           "id": "F",
-          "position": [0.84212, 0.6152, 0.48762]
+          "position": [1.67, 1.22, 0.967]
         },
         {
           "id": "G",
-          "position": [0.15632, 0.6152, 0.48409]
+          "position": [0.31, 1.22, 0.96]
         },
         {
           "id": "H",
-          "position": [0.22188, 0.6152, -0.5799]
+          "position": [0.44, 1.22, -1.15]
         },
         {
           "id": "I",
-          "position": [0.84817, 0.6152, -0.66311]
+          "position": [1.682, 1.22, -1.315]
         },
         {
           "id": "J",
-          "position": [0.42156, 0.6152, 0.19717]
+          "position": [0.836, 1.22, 0.391]
         },
         {
           "id": "K",
-          "position": [0.43417, 0.6152, -0.29096]
+          "position": [0.861, 1.22, -0.577]
         },
         {
           "id": "L",
-          "position": [0.01513, 0.6152, 0.40997]
+          "position": [0.03, 1.22, 0.813]
         },
         {
           "id": "M",
-          "position": [-0.63033, 0.6152, 0.43871]
+          "position": [-1.25, 1.22, 0.87]
         },
         {
           "id": "N",
-          "position": [-0.60008, 0.6152, -0.54965]
+          "position": [-1.19, 1.22, -1.09]
         },
         {
           "id": "O",
-          "position": [0.00504, 0.6152, -0.56982]
+          "position": [0.01, 1.22, -1.13]
         },
         {
           "id": "P",
-          "position": [-0.29752, 0.6152, -0.16237]
+          "position": [-0.59, 1.22, -0.322]
         },
         {
           "id": "Q",
-          "position": [-0.29903, 0.6152, 0.11749]
+          "position": [-0.593, 1.22, 0.233]
         }
       ],
       "measurements": [
@@ -406,8 +507,7 @@
       },
       "fit": "marker-width",
       "draft": true,
-      "measurementTolerance": 0.15,
-      "modelScale": 0.5
+      "measurementTolerance": 0.15
     },
     {
       "id": "object-3",
@@ -573,8 +673,7 @@
       },
       "fit": "marker-width",
       "draft": true,
-      "measurementTolerance": 0.15,
-      "modelScale": 0.5
+      "measurementTolerance": 0.15
     },
     {
       "id": "object-4",
@@ -747,8 +846,7 @@
       },
       "fit": "marker-width",
       "draft": true,
-      "measurementTolerance": 0.15,
-      "modelScale": 0.5
+      "measurementTolerance": 0.15
     }
   ]
 }

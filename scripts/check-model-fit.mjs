@@ -107,16 +107,23 @@ for (const object of data.objects) {
 
   const msize = await modelBounds(path);
   const ratios = psize.map((v, i) => v / msize[i]);
-  const usable = ratios.filter((r) => Number.isFinite(r) && r > 0);
-  const spread = (Math.max(...usable) - Math.min(...usable)) / Math.min(...usable);
+
+  // Sumbu yang nyaris pipih tidak bisa dipakai menilai skala. Model seperti
+  // bidang atap punya tinggi mendekati nol, sedangkan titik ukurnya menjulang
+  // di atasnya — rasionya melonjak tanpa berarti apa-apa.
+  const largest = Math.max(...msize);
+  const flat = msize.map((v) => v / largest < 0.1);
 
   console.log(`\n${object.id} (${object.modelUrl})`);
   for (let a = 0; a < 3; a++)
     console.log(
       `  ${axes[a]}: model ${msize[a].toFixed(4).padStart(9)}  titik ${psize[a]
         .toFixed(4)
-        .padStart(9)}  rasio ${ratios[a].toFixed(4)}`,
+        .padStart(9)}  rasio ${ratios[a].toFixed(4)}${flat[a] ? '  (sumbu pipih, diabaikan)' : ''}`,
     );
+
+  const usable = ratios.filter((r, i) => !flat[i] && Number.isFinite(r) && r > 0);
+  const spread = (Math.max(...usable) - Math.min(...usable)) / Math.min(...usable);
 
   if (spread <= MAX_SPREAD) {
     console.log(`  OK — rasio seragam (selisih ${(spread * 100).toFixed(1)}%), satu ruang.`);
