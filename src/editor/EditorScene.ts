@@ -12,7 +12,14 @@ const LINE_COLOR = 0xff3000;
 export type EditorMode = 'pilih' | 'tambah';
 
 export interface EditorEvents {
+  /** Titik ditambah, dihapus, atau diganti namanya — daftar perlu disusun ulang. */
   onPointsChanged: () => void;
+  /**
+   * Titik hanya berpindah. Sengaja dipisah dari `onPointsChanged`: menyeret
+   * gizmo memicu ini puluhan kali per detik, dan menyusun ulang seluruh
+   * daftar akan merebut fokus dari kotak isian yang sedang diketik.
+   */
+  onPointMoved: () => void;
   onSelectionChanged: (pointId: string | null) => void;
 }
 
@@ -97,7 +104,7 @@ export class EditorScene {
     });
     this.gizmo.addEventListener('objectChange', () => {
       this.refreshLines();
-      this.events.onPointsChanged();
+      this.events.onPointMoved();
     });
     this.scene.add(this.gizmo.getHelper());
 
@@ -167,6 +174,16 @@ export class EditorScene {
   setMeasurements(list: MeasurementDef[]): void {
     this.measurements = list.map((m) => ({ ...m }));
     this.refreshLines();
+  }
+
+  /** Memindahkan titik ke koordinat yang diketik. */
+  setPosition(id: string, position: Vec3): void {
+    const point = this.points.find((p) => p.id === id);
+    if (!point) return;
+
+    point.mesh.position.set(...position);
+    this.refreshLines();
+    this.events.onPointMoved();
   }
 
   /** Jarak antar dua titik dalam satuan model. */

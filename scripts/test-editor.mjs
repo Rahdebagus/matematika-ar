@@ -75,6 +75,21 @@ try {
     coords?.trim() ?? '',
   );
 
+  // Koordinat yang diketik harus benar-benar memindahkan titiknya, bukan
+  // sekadar mengubah angka di layar. Jarak pada daftar ukuran ikut berubah
+  // hanya kalau titiknya betul-betul bergeser di scene.
+  const firstAxis = page.locator('.item.point .field.axis').first();
+  const distanceBefore = await page.locator('.list .item .coords').first().textContent();
+  await firstAxis.fill('7.5');
+  await firstAxis.press('Enter');
+  await page.waitForTimeout(300);
+  const distanceAfter = await page.locator('.list .item .coords').first().textContent();
+  check(
+    distanceBefore !== distanceAfter,
+    'mengetik koordinat memindahkan titik di scene',
+    `${distanceBefore?.trim()} -> ${distanceAfter?.trim()}`,
+  );
+
   // Unduhan JSON harus berisi titik yang barusan ditambahkan.
   const [download] = await Promise.all([
     page.waitForEvent('download', { timeout: 15_000 }),

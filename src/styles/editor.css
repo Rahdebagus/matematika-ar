@@ -195,3 +195,34 @@ button.toggle.is-active {
   color: var(--warn);
   font-weight: 600;
 }
+
+/* Baris titik dibuat dua tingkat: id + tombol di atas, koordinat di bawah. */
+.item.point {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+}
+
+.row.tight {
+  margin: 0;
+  gap: 0.3rem;
+}
+
+.field.axis {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.35rem;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panah naik-turun bawaan memakan lebar yang sudah sempit. */
+.field.axis::-webkit-outer-spin-button,
+.field.axis::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.field.axis {
+  appearance: textfield;
+}

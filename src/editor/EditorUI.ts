@@ -47,6 +47,25 @@ export class EditorUI {
     this.renderMeasurements();
   }
 
+  /**
+   * Dipanggil saat titik hanya berpindah. Nilainya diperbarui di tempat,
+   * bukan dengan menyusun ulang daftar — kalau daftarnya dibangun ulang,
+   * kotak isian yang sedang diketik kehilangan fokus di tengah ketikan.
+   */
+  syncPositions(): void {
+    for (const point of this.scene.getPoints()) {
+      const fields = this.coordInputs.get(point.id);
+      if (!fields) continue;
+
+      for (let axis = 0; axis < 3; axis++) {
+        // Jangan timpa kotak yang sedang diketik pengguna.
+        if (document.activeElement === fields[axis]) continue;
+        fields[axis].value = String(point.position[axis]);
+      }
+    }
+    this.renderMeasurements();
+  }
+
   private get metersPerUnit(): number {
     const value = Number(this.calibrationInput.value.replace(',', '.'));
     return Number.isFinite(value) && value > 0 ? value : 1;
@@ -147,6 +166,7 @@ export class EditorUI {
   }
 
   private pairSelects: HTMLSelectElement[] = [];
+  private readonly coordInputs = new Map<string, HTMLInputElement[]>();
 
   private async loadObject(object: ObjectData): Promise<void> {
     this.active = object;
@@ -167,12 +187,14 @@ export class EditorUI {
 
   private renderPoints(): void {
     this.pointList.replaceChildren();
+    this.coordInputs.clear();
     const points = this.scene.getPoints();
 
     for (const point of points) {
-      const row = el('div', 'item');
+      const row = el('div', 'item point');
       if (point.id === this.scene.selected) row.classList.add('is-active');
 
+      const head = el('div', 'row tight');
       const name = el('input', 'field id');
       name.value = point.id;
       name.addEventListener('change', () => {
@@ -190,14 +212,29 @@ export class EditorUI {
 
       const remove = el('button', 'danger', 'Hapus');
       remove.addEventListener('click', () => this.scene.remove(point.id));
+      head.append(name, pick, remove);
 
-      const coords = el(
-        'span',
-        'coords',
-        point.position.map((v) => v.toFixed(2)).join(', '),
-      );
+      // Koordinat diketik langsung. Menyeret gizmo tidak akan pernah setepat
+      // angka yang sudah diketahui pasti.
+      const axes = el('div', 'row tight');
+      const fields: HTMLInputElement[] = [];
 
-      row.append(name, coords, pick, remove);
+      for (let axis = 0; axis < 3; axis++) {
+        const input = el('input', 'field axis');
+        input.type = 'number';
+        input.step = '0.01';
+        input.value = String(point.position[axis]);
+        input.title = ['X', 'Y', 'Z'][axis];
+        input.addEventListener('change', () => {
+          const next = fields.map((f) => Number(f.value) || 0) as [number, number, number];
+          this.scene.setPosition(point.id, next);
+        });
+        fields.push(input);
+        axes.append(input);
+      }
+
+      this.coordInputs.set(point.id, fields);
+      row.append(head, axes);
       this.pointList.append(row);
     }
 

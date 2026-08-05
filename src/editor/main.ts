@@ -18,6 +18,7 @@ async function bootstrap(view: HTMLDivElement, host: HTMLElement): Promise<void>
   let ui: EditorUI | null = null;
   const scene = new EditorScene(view, {
     onPointsChanged: () => ui?.refresh(),
+    onPointMoved: () => ui?.syncPositions(),
     onSelectionChanged: () => ui?.refresh(),
   });
 
