@@ -148,6 +148,27 @@ export class EditorScene {
     this.events.onPointsChanged();
   }
 
+  /**
+   * Memandang model tepat dari atas, seperti kamera HP yang diarahkan tegak
+   * lurus ke kartu penanda.
+   *
+   * Tanpa ini, editor dan tampilan AR sulit dibandingkan: susunan titiknya
+   * sama persis, tapi sudut pandang yang berbeda membuatnya terlihat lain.
+   */
+  topView(): void {
+    const box = new THREE.Box3().setFromObject(this.model ?? this.pointRoot);
+    if (box.isEmpty()) return;
+
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const distance = Math.max(size.x, size.z) * 1.6;
+
+    this.orbit.target.copy(center);
+    this.camera.position.set(center.x, center.y + distance, center.z + 0.001);
+    this.camera.up.set(0, 1, 0);
+    this.orbit.update();
+  }
+
   get pointIds(): string[] {
     return this.points.map((p) => p.id);
   }

@@ -104,7 +104,15 @@ export class EditorUI {
     pilih.addEventListener('click', () => setMode('pilih'));
     tambah.addEventListener('click', () => setMode('tambah'));
     modeRow.append(pilih, tambah);
-    header.append(modeRow, this.status);
+
+    // Tampilan atas menyamakan sudut pandang dengan kamera HP yang tegak
+    // lurus ke kartu, supaya editor dan AR bisa dibandingkan setara.
+    const viewRow = el('div', 'row');
+    const topView = el('button', undefined, 'Tampilan atas');
+    topView.addEventListener('click', () => this.scene.topView());
+    viewRow.append(topView);
+
+    header.append(modeRow, viewRow, this.status);
     setMode('pilih');
 
     // --- kalibrasi ---
