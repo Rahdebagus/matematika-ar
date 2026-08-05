@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -10,5 +11,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     target: 'es2022',
+    rollupOptions: {
+      input: {
+        // Editor titik ukur adalah halaman terpisah. Anak yang membuka
+        // aplikasi tidak ikut mengunduh sebarispun kodenya.
+        main: resolve(__dirname, 'index.html'),
+        editor: resolve(__dirname, 'editor.html'),
+      },
+    },
   },
 });

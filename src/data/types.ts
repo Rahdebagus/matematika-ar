@@ -113,6 +113,12 @@ export interface ObjectData {
    * Idealnya tidak perlu: benahi saja skala model saat ekspor dari Unity.
    */
   alignModelToPoints?: boolean;
+  /**
+   * Berapa meter dunia nyata untuk satu satuan model. Dipakai editor titik
+   * ukur untuk mengisi angka secara otomatis; aplikasi AR sendiri tidak
+   * memakainya, karena angka yang ditampilkan sudah tertulis di tiap ukuran.
+   */
+  metersPerUnit?: number;
   points: PointData[];
   measurements: MeasurementDef[];
   style?: Partial<MeasurementStyle>;

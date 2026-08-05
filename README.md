@@ -23,6 +23,12 @@ npm run check:data # nilai label vs jarak titik di app-data.json (ikut jalan saa
 # Perlu `npm run build` dulu. SMOKE_SHOT=<file.png> untuk menyimpan tangkapan layar.
 npm run test:smoke -- public/markers/object-1.png
 
+# Uji asap editor titik ukur (EDITOR_SHOT=<file.png> untuk tangkapan layar)
+npm run test:editor
+
+# Cek model dan titik ukur berasal dari ruang yang sama
+npm run check:fit
+
 # Perbarui QR code (ikut jalan saat build; di Vercel alamatnya diambil
 # otomatis dari domain produksi, jadi tidak perlu diingat manual)
 npm run make:qr -- https://alamat-anda.vercel.app
@@ -40,6 +46,30 @@ npm run optimize:model -- "<sumber.glb>" public/models/<nama>.glb
 
 > Kamera hanya aktif di origin aman: `localhost` atau HTTPS. Untuk uji AR di HP,
 > deploy ke Vercel — bukan lewat IP lokal `http://`.
+
+## Editor titik ukur
+
+Buka **`/editor.html`** untuk menaruh titik ukur langsung di atas model 3D.
+
+Karena titik ditempatkan pada modelnya sendiri, koordinatnya selalu berada di
+ruang model — perbedaan skala antara model dan titik, yang muncul kalau
+keduanya diekspor terpisah dari Unity, jadi mustahil terjadi.
+
+| Aksi | Cara |
+|---|---|
+| Menaruh titik | Tekan **Tambah titik**, lalu klik permukaan model |
+| Menggeser titik | Klik titiknya, seret panah gizmo |
+| Membuat ukuran | Pilih dua titik di bagian bawah, tekan **Tambah ukuran** |
+| Mengisi angka | Isi kalibrasi sekali, tekan **Isi semua angka dari kalibrasi** |
+| Menyimpan | **Unduh app-data.json**, taruh di `public/data/` |
+
+Kalibrasi = berapa meter untuk satu satuan model. Ukur satu jarak yang sudah
+diketahui pasti, isi angkanya, lalu semua ukuran lain terhitung sendiri.
+Tiap baris menampilkan jarak sebenarnya di samping angka yang tertulis, dan
+menyorotnya kuning bila menyimpang lebih dari 5%.
+
+Editor tidak ditautkan dari aplikasi dan bundelnya terpisah, jadi tidak ikut
+terunduh oleh pengguna biasa.
 
 ## Kontrol AR
 

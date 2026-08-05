@@ -13,7 +13,8 @@
     "compile:targets": "node scripts/compile-targets.mjs",
     "optimize:model": "node scripts/optimize-model.mjs",
     "make:qr": "node scripts/make-qr.mjs",
-    "check:fit": "node scripts/check-model-fit.mjs"
+    "check:fit": "node scripts/check-model-fit.mjs",
+    "test:editor": "node scripts/test-editor.mjs"
   },
   "dependencies": {
     "mind-ar": "^1.2.5",
