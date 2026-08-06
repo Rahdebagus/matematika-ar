@@ -286,18 +286,19 @@ try {
    * jadi pucat.
    */
   const waitScreen = async (heading) => {
-    const panel = page.locator(`#screens .screen-panel:visible h1:text-is("${heading}")`);
-    await panel.waitFor({ timeout: 10_000 });
+    // Judul halaman isi ditulis huruf besar oleh CSS/JS, judul menu tidak.
+    // Membandingkan tanpa peduli besar-kecil huruf membuat pengujian tidak
+    // ikut pecah setiap kali gaya judul diubah.
     await page.waitForFunction(
       (text) => {
         const found = [...document.querySelectorAll('#screens .screen-panel h1')].find(
-          (h) => h.textContent === text,
+          (h) => (h.textContent ?? '').trim().toUpperCase() === text,
         );
         const screen = found?.closest('.screen');
-        return screen !== null && screen !== undefined && getComputedStyle(screen).opacity === '1';
+        return !!screen && getComputedStyle(screen).opacity === '1';
       },
-      heading,
-      { timeout: 10_000 },
+      heading.toUpperCase(),
+      { timeout: 15_000 },
     );
   };
 

@@ -1,3 +1,5 @@
+import { LOGO_SVG } from '../icons';
+
 export interface MenuActions {
   onMulaiAR: () => void;
   onMateri: () => void;
@@ -17,6 +19,10 @@ export class MenuScreen {
   constructor(actions: MenuActions) {
     this.element = document.createElement('section');
     this.element.className = 'screen-panel menu';
+
+    const logo = document.createElement('div');
+    logo.className = 'menu-logo';
+    logo.innerHTML = LOGO_SVG;
 
     const title = document.createElement('h1');
     title.textContent = 'Matematika AR';
@@ -47,7 +53,7 @@ export class MenuScreen {
       sound.setAttribute('aria-pressed', String(muted));
     });
 
-    this.element.append(sound, title, subtitle, nav);
+    this.element.append(sound, logo, title, subtitle, nav);
   }
 }
 

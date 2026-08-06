@@ -37,58 +37,75 @@ const menu = new MenuScreen({
   onToggleSuara: () => audio.toggleMute(),
 });
 
-const panduan = new InfoScreen(
-  'Panduan',
-  [
-    { type: 'paragraph', text: 'Siapkan kartu penanda sebelum memulai AR.' },
+const panduan = new InfoScreen({
+  title: 'Panduan',
+  accent: '#3ec95b',
+  icon: 'help',
+  onBack: () => router.show('menu'),
+  blocks: [
     {
       type: 'steps',
       items: [
-        'Cetak salah satu kartu penanda di bawah, atau tampilkan di layar lain.',
-        'Buka menu utama lalu tekan "Mulai AR" dan izinkan akses kamera.',
-        'Arahkan kamera ke kartu sampai objek 3D muncul.',
-        'Geser satu jari untuk memutar objek bebas ke segala arah: mendatar untuk memutar, tegak untuk memiringkan. Cubit dua jari untuk memperbesar atau memperkecil.',
-        'Pakai tombol di bawah layar untuk menampilkan, menyembunyikan, atau membuat objek transparan.',
-        'Tekan nama kategori untuk memilih ukuran yang ditampilkan.',
-        'Tombol Reset mengembalikan putaran, ukuran, dan tampilan garis ke kondisi awal.',
+        { title: 'Siapkan kartu', text: 'Ambil kartu penanda Object 1-4.' },
+        { title: 'Tekan Mulai AR', text: 'Izinkan aplikasi memakai kamera.' },
+        { title: 'Arahkan ke kartu', text: 'Objek 3D akan muncul di layar.' },
+        { title: 'Amati ukurannya', text: 'Garis dan angka menunjukkan ukuran.' },
+        { title: 'Coba tombolnya', text: 'Tampilkan, sembunyikan, atau transparan.' },
       ],
     },
+    { type: 'divider' },
     {
       type: 'paragraph',
-      text: 'Jika objek tidak muncul, dekatkan kamera atau cetak kartu lebih besar. Kartu yang terlalu kecil di layar bisa salah dikenali.',
+      text: 'Tombol Kunci membekukan objek di tempat, jadi kamera boleh dialihkan dari kartu. Geser satu jari untuk memutar, cubit dua jari untuk memperbesar.',
     },
     {
       type: 'links',
+      title: 'Kartu penanda',
       items: [
-        { label: 'Kartu penanda 1 — Kubus 10 cm', href: '/markers/object-1.png' },
-        { label: 'Kartu penanda 2 — Balok 12x8x6 cm', href: '/markers/object-2.png' },
-        { label: 'Kartu penanda 3 — Kubus 15 cm', href: '/markers/object-3.png' },
-        { label: 'Kartu penanda 4 — Objek 4', href: '/markers/object-4.png' },
+        { label: 'Kartu 1 — Object-1', href: '/markers/object-1.png' },
+        { label: 'Kartu 2 — Object-2', href: '/markers/object-2.png' },
+        { label: 'Kartu 3 — Object-3', href: '/markers/object-3.png' },
+        { label: 'Kartu 4 — Object-4', href: '/markers/object-4.png' },
       ],
     },
   ],
-  () => router.show('menu'),
-);
+});
 
-const tentang = new InfoScreen(
-  'Tentang',
-  [
+const tentang = new InfoScreen({
+  title: 'Tentang',
+  accent: '#4f8cff',
+  icon: 'info',
+  onBack: () => router.show('menu'),
+  blocks: [
     {
       type: 'paragraph',
-      text: 'Matematika AR adalah aplikasi edukasi berbasis WebAR untuk belajar pengukuran, bangun ruang, dan geometri.',
+      text: 'Matematika AR adalah media pembelajaran interaktif yang memanfaatkan Augmented Reality untuk membantu memahami bangun ruang melalui visualisasi 3D.',
     },
+    { type: 'divider' },
     {
-      type: 'paragraph',
-      text: 'Objek 3D muncul di atas kartu penanda lengkap dengan titik, garis ukur, dan label. Aplikasi berjalan langsung di browser HP tanpa perlu memasang APK.',
+      type: 'features',
+      items: [
+        {
+          icon: 'cube',
+          title: 'Visualisasi 3D',
+          text: 'Lihat bangun ruang secara nyata melalui kamera.',
+        },
+        {
+          icon: 'ruler',
+          title: 'Pengukuran interaktif',
+          text: 'Amati panjang, lebar, tinggi, dan diameter objek.',
+        },
+        {
+          icon: 'rotate',
+          title: 'Belajar lebih mudah',
+          text: 'Putar, perbesar, dan pelajari objek dari berbagai sisi.',
+        },
+      ],
     },
     { type: 'qr', caption: 'Pindai untuk membuka aplikasi ini di HP lain:' },
-    {
-      type: 'paragraph',
-      text: 'Dibuat dengan TypeScript, Three.js, dan MindAR. Versi web ini menggantikan versi Unity dengan logika yang sama.',
-    },
+    { type: 'note', text: 'Versi 1.0' },
   ],
-  () => router.show('menu'),
-);
+});
 
 screensEl.append(menu.element, panduan.element, tentang.element);
 
