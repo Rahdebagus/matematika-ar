@@ -9,6 +9,7 @@ const ICONS = {
   transparent:
     '<circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" stroke="none"/>',
   reset: '<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
 };
 
 type IconName = keyof typeof ICONS;
@@ -27,12 +28,20 @@ export class AROverlay {
   private readonly actions: HTMLDivElement;
   private readonly categoryBar: HTMLDivElement;
   private readonly buttons: HTMLButtonElement[] = [];
+  /**
+   * Tombol dirujuk lewat nama, bukan nomor urut. Sebelumnya memakai indeks,
+   * dan menambah satu tombol di depan diam-diam membuat kode menyalakan
+   * tombol yang salah.
+   */
+  private readonly byName = new Map<IconName, HTMLButtonElement>();
 
   private controller: MeasurementController | null = null;
   private transparent = false;
 
   /** Dipanggil tombol Reset, untuk hal di luar measurement (mis. gestur). */
   private onReset: (() => void) | null = null;
+  private onLock: ((locked: boolean) => void) | null = null;
+  private locked = false;
 
   constructor(host: HTMLElement, statusEl: HTMLElement) {
     this.statusEl = statusEl;
@@ -47,6 +56,7 @@ export class AROverlay {
     this.actions = document.createElement('div');
     this.actions.className = 'overlay-actions';
 
+    this.addAction('lock', 'Kunci', () => this.toggleLock());
     this.addAction('show', 'Tampilkan', () => this.controller?.showAll());
     this.addAction('hide', 'Sembunyikan', () => this.controller?.hideAll());
     this.addAction('transparent', 'Transparan', () => this.toggleTransparent());
@@ -64,8 +74,38 @@ export class AROverlay {
     this.onReset = handler;
   }
 
+  setLockHook(handler: (locked: boolean) => void): void {
+    this.onLock = handler;
+  }
+
+  private toggleLock(): void {
+    this.locked = !this.locked;
+    this.onLock?.(this.locked);
+    this.syncLockState();
+  }
+
+  private syncLockState(): void {
+    const button = this.byName.get('lock');
+    button?.classList.toggle('is-active', this.locked);
+    button?.setAttribute('aria-pressed', String(this.locked));
+
+    // Saat terkunci, tombolnya tetap hidup walau marker sudah lepas —
+    // kalau tidak, pengguna terjebak dan tidak bisa membuka kuncinya lagi.
+    if (button) button.disabled = false;
+
+    this.setStatus(
+      this.locked
+        ? 'Objek dikunci. Kamera boleh dialihkan dari kartu.'
+        : 'Arahkan kamera ke kartu penanda',
+    );
+  }
+
   /** `null` saat tidak ada marker yang terlihat. */
   bind(controller: MeasurementController | null): void {
+    // Objek terkunci sengaja tidak dilepas walau marker hilang — justru itu
+    // gunanya mengunci.
+    if (controller === null && this.locked) return;
+
     this.controller = controller;
     this.root.hidden = controller === null;
 
@@ -76,6 +116,11 @@ export class AROverlay {
     // Transparansi milik objek sebelumnya tidak boleh terbawa.
     this.transparent = false;
     this.syncTransparentState();
+    if (controller === null) {
+      this.locked = false;
+      this.onLock?.(false);
+      this.syncLockState();
+    }
     this.buildCategories(controller);
   }
 
@@ -93,6 +138,7 @@ export class AROverlay {
     button.addEventListener('click', onClick);
 
     this.buttons.push(button);
+    this.byName.set(icon, button);
     this.actions.append(button);
   }
 
@@ -115,7 +161,7 @@ export class AROverlay {
   }
 
   private syncTransparentState(): void {
-    const button = this.buttons[2];
+    const button = this.byName.get('transparent');
     button?.classList.toggle('is-active', this.transparent);
     button?.setAttribute('aria-pressed', String(this.transparent));
   }

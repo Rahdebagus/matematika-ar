@@ -574,6 +574,34 @@ try {
       `sisa selisih ${maxShift(atRest, reset)} px`,
     );
 
+    // 4e. Kunci AR. Yang diuji bukan status tombolnya, melainkan apakah objek
+    //     benar-benar bertahan saat marker dianggap hilang — itu satu-satunya
+    //     alasan fitur ini ada.
+    await press('Reset');
+    await page.waitForTimeout(350);
+    await press('Kunci');
+    const lockPressed = await page.getAttribute(
+      '.overlay-button[title="Kunci"]',
+      'aria-pressed',
+    );
+    check(lockPressed === 'true', 'tombol Kunci menyala');
+
+    const lockedLabels = await labelPositions(page);
+    // Marker "dihilangkan" dengan mengarahkan kamera palsu ke gambar kosong.
+    await page.evaluate(() => {
+      const video = document.querySelector('#app video');
+      if (video?.srcObject instanceof MediaStream) {
+        for (const track of video.srcObject.getVideoTracks()) track.stop();
+      }
+    });
+    await page.waitForTimeout(1200);
+    const afterLost = await labelPositions(page);
+    check(
+      afterLost.length === lockedLabels.length && afterLost.length > 0,
+      'objek bertahan saat marker hilang selama terkunci',
+      `${lockedLabels.length} -> ${afterLost.length} label`,
+    );
+
     const chips = await page.locator('.overlay-chip').count();
     if (chips > 1) {
       const first = page.locator('.overlay-chip').first();

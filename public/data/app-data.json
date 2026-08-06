@@ -11,7 +11,7 @@
     "lineColor": "#14E6FF",
     "lineWidth": 4,
     "labelColor": "#FFFFFF",
-    "labelFontSize": 15,
+    "labelFontSize": 12,
     "showArrows": true,
     "arrowLength": 0.008,
     "arrowHalfWidth": 0.003,
@@ -219,7 +219,7 @@
         "lineColor": "#FF3000",
         "lineWidth": 3,
         "labelColor": "#FFFFFF",
-        "labelFontSize": 13,
+        "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02
@@ -517,7 +517,7 @@
         "lineColor": "#FF3000",
         "lineWidth": 3,
         "labelColor": "#FFFFFF",
-        "labelFontSize": 13,
+        "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02
@@ -682,7 +682,7 @@
         "lineColor": "#FF3000",
         "lineWidth": 3,
         "labelColor": "#FFFFFF",
-        "labelFontSize": 13,
+        "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02
@@ -856,7 +856,7 @@
         "lineColor": "#FF3000",
         "lineWidth": 3,
         "labelColor": "#FFFFFF",
-        "labelFontSize": 13,
+        "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02

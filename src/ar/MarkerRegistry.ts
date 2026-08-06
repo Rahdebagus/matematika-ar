@@ -18,6 +18,7 @@ export class MarkerRegistry {
   private readonly events: MarkerEvents;
   private readonly groups = new Map<number, THREE.Group>();
   private readonly visible = new Set<number>();
+  private locked = false;
 
   constructor(scene: THREE.Scene, events: MarkerEvents = {}) {
     this.scene = scene;
@@ -50,10 +51,31 @@ export class MarkerRegistry {
   }
 
   /**
+   * Membekukan objek di posisi terakhirnya.
+   *
+   * Saat terkunci, pembaruan tracking diabaikan seluruhnya: objek tetap
+   * tampil walau kartu penanda sudah lepas dari pandangan. Karena matriks
+   * anchor dinyatakan relatif terhadap kamera, objek yang dibekukan ikut
+   * bergerak bersama HP — jadi bisa diamati sambil berjalan tanpa harus
+   * terus mengarahkan kamera ke kartu.
+   */
+  setLocked(locked: boolean): void {
+    this.locked = locked;
+  }
+
+  get isLocked(): boolean {
+    return this.locked;
+  }
+
+  /**
    * Sembunyikan semua anchor. Dipakai saat keluar dari layar AR: tanpa ini
    * objek yang terakhir terlihat masih tergambar saat kamera sudah mati.
    */
   hideAll(): void {
+    // Kunci ikut dilepas: keluar dari layar AR selalu mengembalikan keadaan
+    // bersih, bukan meninggalkan objek beku yang muncul lagi nanti.
+    this.locked = false;
+
     for (const [targetIndex, group] of this.groups) {
       group.visible = false;
       if (this.visible.delete(targetIndex)) {
@@ -81,6 +103,9 @@ export class MarkerRegistry {
   }
 
   private apply(targetIndex: number, matrix: THREE.Matrix4 | null): void {
+    // Terkunci: posisi terakhir dipertahankan, termasuk saat marker hilang.
+    if (this.locked) return;
+
     const group = this.groups.get(targetIndex);
     if (!group) return;
 

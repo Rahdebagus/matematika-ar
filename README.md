@@ -79,6 +79,7 @@ terunduh oleh pengguna biasa.
 | Geser satu jari tegak | Miringkan objek 360°, tanpa batas |
 | Cubit dua jari | Perbesar / perkecil (0,35x – 3x) |
 | Roda tetikus | Perbesar / perkecil (untuk uji di laptop) |
+| Tombol Kunci | Bekukan objek di tempat; kamera boleh dialihkan dari kartu |
 | Tombol Reset | Kembalikan putaran, ukuran, transparansi, dan tampilan garis |
 
 Putaran memakai **sumbu layar**, bukan sumbu tetap objek: arah putar selalu

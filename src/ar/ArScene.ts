@@ -63,6 +63,7 @@ export class ArScene {
     // tidak boleh ikut memutar objek.
     this.transform = new ObjectTransform(this.app.renderer.domElement, this.app.camera);
     overlay.setResetHook(() => this.transform.reset());
+    overlay.setLockHook((locked) => this.registry.setLocked(locked));
 
     this.registry = new MarkerRegistry(this.app.scene, {
       onFound: (targetIndex) => {
