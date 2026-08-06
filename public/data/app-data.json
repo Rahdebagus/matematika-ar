@@ -689,7 +689,8 @@
       },
       "fit": "marker-width",
       "draft": true,
-      "measurementTolerance": 0.15
+      "measurementTolerance": 0.15,
+      "metersPerUnit": 1
     },
     {
       "id": "object-4",
@@ -862,7 +863,8 @@
       },
       "fit": "marker-width",
       "draft": true,
-      "measurementTolerance": 0.15
+      "measurementTolerance": 0.15,
+      "metersPerUnit": 1
     }
   ]
 }

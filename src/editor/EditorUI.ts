@@ -110,7 +110,15 @@ export class EditorUI {
     const viewRow = el('div', 'row');
     const topView = el('button', undefined, 'Tampilan atas');
     topView.addEventListener('click', () => this.scene.topView());
-    viewRow.append(topView);
+
+    const fitPoints = el('button', undefined, 'Sebar titik ke model');
+    fitPoints.addEventListener('click', () => {
+      const ok = this.scene.fitPointsToModel();
+      this.status.textContent = ok
+        ? 'Titik disebar mengikuti ukuran model. Susunannya tetap — geser lagi ke posisi yang tepat.'
+        : 'Perlu model dan minimal dua titik.';
+    });
+    viewRow.append(topView, fitPoints);
 
     header.append(modeRow, viewRow, this.status);
     setMode('pilih');

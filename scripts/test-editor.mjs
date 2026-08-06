@@ -90,6 +90,18 @@ try {
     `${distanceBefore?.trim()} -> ${distanceAfter?.trim()}`,
   );
 
+  // "Sebar titik ke model" harus benar-benar memindahkan titik sekaligus,
+  // bukan sekadar mengubah pesan status.
+  const beforeSpread = await page.locator('.item.point .field.axis').first().inputValue();
+  await page.click('button:text-is("Sebar titik ke model")');
+  await page.waitForTimeout(300);
+  const afterSpread = await page.locator('.item.point .field.axis').first().inputValue();
+  check(
+    beforeSpread !== afterSpread,
+    'tombol sebar titik memindahkan seluruh titik',
+    `${beforeSpread} -> ${afterSpread}`,
+  );
+
   // Berpindah objek tidak boleh membuang suntingan objek sebelumnya.
   // Sebelum diperbaiki, suntingan hilang diam-diam dan baru ketahuan setelah
   // berkasnya diunduh — kerja yang sudah dilakukan lenyap tanpa peringatan.

@@ -169,6 +169,46 @@ export class EditorScene {
     this.orbit.update();
   }
 
+  /**
+   * Menskalakan dan memusatkan seluruh titik sekaligus agar sebesar mungkin
+   * di dalam model, tanpa mengubah susunannya.
+   *
+   * Untuk titik warisan Unity yang skalanya jauh berbeda, menyeret satu per
+   * satu melelahkan dan tidak akurat. Ini memberi titik awal yang wajar;
+   * penyesuaian halus tetap dilakukan tangan sesudahnya.
+   *
+   * Skalanya diambil dari sumbu yang paling membatasi, supaya titik tidak
+   * pernah keluar dari model.
+   */
+  fitPointsToModel(): boolean {
+    if (!this.model || this.points.length < 2) return false;
+
+    const target = new THREE.Box3().setFromObject(this.model);
+    const current = new THREE.Box3();
+    for (const point of this.points) current.expandByPoint(point.mesh.position);
+
+    const targetSize = target.getSize(new THREE.Vector3());
+    const currentSize = current.getSize(new THREE.Vector3());
+
+    let scale = Infinity;
+    for (const axis of ['x', 'y', 'z'] as const) {
+      if (currentSize[axis] > 1e-6) {
+        scale = Math.min(scale, targetSize[axis] / currentSize[axis]);
+      }
+    }
+    if (!Number.isFinite(scale) || scale <= 0) return false;
+
+    const from = current.getCenter(new THREE.Vector3());
+    const to = target.getCenter(new THREE.Vector3());
+    for (const point of this.points) {
+      point.mesh.position.sub(from).multiplyScalar(scale).add(to);
+    }
+
+    this.refreshLines();
+    this.events.onPointMoved();
+    return true;
+  }
+
   get pointIds(): string[] {
     return this.points.map((p) => p.id);
   }
