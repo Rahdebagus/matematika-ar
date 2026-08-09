@@ -531,39 +531,39 @@
       "points": [
         {
           "id": "A",
-          "position": [1.83511, -1.80162, -1.52372]
+          "position": [0.96624, -1.00225, -0.49706]
         },
         {
           "id": "B",
-          "position": [1.83511, -1.80162, 0.69625]
+          "position": [0.96624, -1.00225, 0.57695]
         },
         {
           "id": "C",
-          "position": [-1.84482, -1.80162, 0.67625]
+          "position": [-1.03488, -1.00225, 0.55695]
         },
         {
           "id": "D",
-          "position": [-1.86482, -1.80162, -1.58972]
+          "position": [-1.03488, -1.00225, -0.56306]
         },
         {
           "id": "E",
-          "position": [1.83511, 2.07831, -1.52372]
+          "position": [0.96624, 1.21939, -0.41912]
         },
         {
           "id": "F",
-          "position": [1.83511, 2.07831, 0.69625]
+          "position": [0.96624, 1.22799, 0.53214]
         },
         {
           "id": "G",
-          "position": [-1.84482, 2.07831, 0.67625]
+          "position": [-1.01488, 1.22799, 0.51214]
         },
         {
           "id": "H",
-          "position": [-1.86482, 2.07831, -1.58972]
+          "position": [-1.03488, 1.21939, -0.48512]
         },
         {
           "id": "P",
-          "position": [0.05314, 2.07831, -1.45372]
+          "position": [0.01073, 0.14119, -0.41868]
         }
       ],
       "measurements": [
@@ -571,7 +571,7 @@
           "id": "AB",
           "from": "A",
           "to": "B",
-          "value": "2,38",
+          "value": "2,12",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -580,7 +580,7 @@
           "id": "BC",
           "from": "B",
           "to": "C",
-          "value": "3,95",
+          "value": "3,96",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -589,7 +589,7 @@
           "id": "AE",
           "from": "A",
           "to": "E",
-          "value": "4,16",
+          "value": "4,40",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -598,7 +598,7 @@
           "id": "C",
           "from": "C",
           "to": "D",
-          "value": "2,43",
+          "value": "2,22",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -607,7 +607,7 @@
           "id": "DA",
           "from": "D",
           "to": "A",
-          "value": "3,97",
+          "value": "3,96",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -616,7 +616,7 @@
           "id": "BF",
           "from": "B",
           "to": "F",
-          "value": "4,16",
+          "value": "4,41",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -625,7 +625,7 @@
           "id": "CG",
           "from": "C",
           "to": "G",
-          "value": "4,16",
+          "value": "4,41",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -634,7 +634,7 @@
           "id": "DH",
           "from": "D",
           "to": "H",
-          "value": "4,16",
+          "value": "4,40",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -643,7 +643,7 @@
           "id": "EF",
           "from": "E",
           "to": "F",
-          "value": "2,38",
+          "value": "1,88",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -652,7 +652,7 @@
           "id": "GH",
           "from": "G",
           "to": "H",
-          "value": "2,43",
+          "value": "1,97",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -661,7 +661,7 @@
           "id": "GF",
           "from": "G",
           "to": "F",
-          "value": "3,95",
+          "value": "3,92",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -670,7 +670,7 @@
           "id": "HE",
           "from": "H",
           "to": "E",
-          "value": "3,97",
+          "value": "3,96",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -686,9 +686,7 @@
         "arrowHalfWidth": 0.02
       },
       "fit": "marker-width",
-      "draft": true,
-      "measurementTolerance": 0.15,
-      "metersPerUnit": 1.0734
+      "metersPerUnit": 1.9783
     },
     {
       "id": "object-4",
