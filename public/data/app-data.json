@@ -66,11 +66,11 @@
         },
         {
           "id": "K",
-          "position": [1.46, 1.35, -0.07]
+          "position": [1.46, 0.18168, 1.09096]
         },
         {
           "id": "L",
-          "position": [1.46, -0.77, -0.07]
+          "position": [1.46, 0.175, -1.99934]
         }
       ],
       "measurements": [
@@ -79,8 +79,8 @@
           "from": "A",
           "to": "B",
           "displayName": "L",
-          "value": "145",
-          "unit": "CM",
+          "value": "198,97",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -89,8 +89,8 @@
           "from": "B",
           "to": "C",
           "displayName": "p",
-          "value": "185",
-          "unit": "CM",
+          "value": "192,30",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -99,8 +99,8 @@
           "from": "C",
           "to": "D",
           "displayName": "L",
-          "value": "145",
-          "unit": "CM",
+          "value": "203,52",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -109,8 +109,8 @@
           "from": "D",
           "to": "A",
           "displayName": "p",
-          "value": "185",
-          "unit": "CM",
+          "value": "192,25",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -119,8 +119,8 @@
           "from": "E",
           "to": "F",
           "displayName": "L",
-          "value": "145",
-          "unit": "CM",
+          "value": "198,97",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -129,8 +129,8 @@
           "from": "G",
           "to": "H",
           "displayName": "L",
-          "value": "145",
-          "unit": "CM",
+          "value": "198,97",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -139,8 +139,8 @@
           "from": "F",
           "to": "G",
           "displayName": "p",
-          "value": "185",
-          "unit": "CM",
+          "value": "192,25",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -149,8 +149,8 @@
           "from": "H",
           "to": "E",
           "displayName": "p",
-          "value": "185",
-          "unit": "CM",
+          "value": "192,25",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -159,8 +159,8 @@
           "from": "A",
           "to": "E",
           "displayName": "T",
-          "value": "185",
-          "unit": "CM",
+          "value": "183,85",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -169,8 +169,8 @@
           "from": "B",
           "to": "F",
           "displayName": "T",
-          "value": "185",
-          "unit": "CM",
+          "value": "183,85",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -179,8 +179,8 @@
           "from": "C",
           "to": "G",
           "displayName": "T",
-          "value": "185",
-          "unit": "CM",
+          "value": "183,91",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -189,8 +189,8 @@
           "from": "D",
           "to": "H",
           "displayName": "T",
-          "value": "185",
-          "unit": "CM",
+          "value": "183,85",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -199,8 +199,8 @@
           "from": "I",
           "to": "J",
           "displayName": "D",
-          "value": "100",
-          "unit": "CM",
+          "value": "95,29",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         },
@@ -208,9 +208,9 @@
           "id": "KL",
           "from": "K",
           "to": "L",
-          "displayName": "T",
-          "value": "148",
-          "unit": "CM",
+          "displayName": "P",
+          "value": "137,43",
+          "unit": "cm",
           "showPointPair": true,
           "visibleOnStart": true
         }
@@ -225,9 +225,7 @@
         "arrowHalfWidth": 0.02
       },
       "fit": "marker-width",
-      "draft": true,
-      "measurementTolerance": 0.15,
-      "metersPerUnit": 1
+      "metersPerUnit": 0.4447
     },
     {
       "id": "object-2",
