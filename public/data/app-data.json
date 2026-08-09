@@ -3,8 +3,8 @@
   "markerWidthMeters": 0.1,
   "bloom": {
     "enabled": true,
-    "strength": 0.7,
-    "radius": 0.25,
+    "strength": 0.45,
+    "radius": 0.18,
     "threshold": 0.65
   },
   "defaultStyle": {
@@ -16,7 +16,7 @@
     "arrowLength": 0.008,
     "arrowHalfWidth": 0.003,
     "worldUnits": false,
-    "glow": 3.5
+    "glow": 2.8
   },
   "objects": [
     {
@@ -224,7 +224,7 @@
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02,
-        "glow": 3.5
+        "glow": 2.8
       },
       "fit": "marker-width",
       "metersPerUnit": 0.4447
@@ -521,7 +521,7 @@
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02,
-        "glow": 3.5
+        "glow": 2.8
       },
       "fit": "marker-width",
       "metersPerUnit": 3.809
@@ -687,7 +687,7 @@
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02,
-        "glow": 3.5
+        "glow": 2.8
       },
       "fit": "marker-width",
       "metersPerUnit": 1.9783
@@ -860,7 +860,7 @@
         "showArrows": false,
         "arrowLength": 0.02,
         "arrowHalfWidth": 0.02,
-        "glow": 3.5
+        "glow": 2.8
       },
       "fit": "marker-width",
       "measurementTolerance": 0.09,
