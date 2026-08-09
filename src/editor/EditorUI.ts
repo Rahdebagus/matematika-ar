@@ -1,4 +1,4 @@
-import type { EditorScene } from './EditorScene';
+import type { EditorScene, EditorView } from './EditorScene';
 import type { AppData, MeasurementDef, ObjectData } from '../data/types';
 
 const el = <K extends keyof HTMLElementTagNameMap>(
@@ -31,6 +31,8 @@ export class EditorUI {
   private readonly status = el('p', 'status');
   private readonly calibrationInput = el('input', 'field');
   private readonly unitSelect = el('select', 'field');
+  private readonly anchorSelect = el('select', 'field');
+  private readonly anchorLength = el('input', 'field');
 
   constructor(host: HTMLElement, scene: EditorScene, data: AppData) {
     this.host = host;
@@ -99,17 +101,29 @@ export class EditorUI {
       this.status.textContent =
         mode === 'tambah'
           ? 'Klik permukaan model untuk menaruh titik baru.'
-          : 'Klik titik untuk memilih, lalu seret panahnya untuk menggeser.';
+          : 'Klik titik untuk memilih, Shift+klik untuk menambah titik lain. Yang terpilih bergeser bersama.';
     };
     pilih.addEventListener('click', () => setMode('pilih'));
     tambah.addEventListener('click', () => setMode('tambah'));
     modeRow.append(pilih, tambah);
 
-    // Tampilan atas menyamakan sudut pandang dengan kamera HP yang tegak
-    // lurus ke kartu, supaya editor dan AR bisa dibandingkan setara.
-    const viewRow = el('div', 'row');
-    const topView = el('button', undefined, 'Tampilan atas');
-    topView.addEventListener('click', () => this.scene.topView());
+    // Enam arah baku. Dari atas menyamakan sudut pandang dengan kamera HP
+    // yang tegak lurus ke kartu; sisi-sisinya untuk memeriksa apakah titik
+    // benar-benar menempel pada permukaan atau menggantung di depannya.
+    const views: [EditorView, string][] = [
+      ['perspektif', 'Bebas'],
+      ['atas', 'Atas'],
+      ['depan', 'Depan'],
+      ['belakang', 'Belakang'],
+      ['kiri', 'Kiri'],
+      ['kanan', 'Kanan'],
+    ];
+    const viewGrid = el('div', 'grid');
+    for (const [view, label] of views) {
+      const button = el('button', undefined, label);
+      button.addEventListener('click', () => this.scene.setView(view));
+      viewGrid.append(button);
+    }
 
     const fitPoints = el('button', undefined, 'Sebar titik ke model');
     fitPoints.addEventListener('click', () => {
@@ -118,9 +132,8 @@ export class EditorUI {
         ? 'Titik disebar mengikuti ukuran model. Susunannya tetap — geser lagi ke posisi yang tepat.'
         : 'Perlu model dan minimal dua titik.';
     });
-    viewRow.append(topView, fitPoints);
 
-    header.append(modeRow, viewRow, this.status);
+    header.append(modeRow, el('h2', undefined, 'Tampilan'), viewGrid, fitPoints, this.status);
     setMode('pilih');
 
     // --- kalibrasi ---
@@ -138,7 +151,31 @@ export class EditorUI {
     }
     this.unitSelect.addEventListener('change', () => this.renderMeasurements());
 
+    // Model dibuat dalam satuan bebas — satu satuan bisa berarti berapa pun.
+    // Kalibrasi itulah yang menerjemahkannya ke meter sungguhan, dan tanpanya
+    // angka yang tampil di AR tidak punya arti apa-apa.
     calibration.append(
+      el(
+        'p',
+        'hint',
+        'Model 3D memakai satuannya sendiri, bukan meter. Kalibrasi memberi tahu ' +
+          'berapa meter arti satu satuan itu, supaya semua angka ukuran bisa dihitung ' +
+          'sendiri dari jarak antar titik.',
+      ),
+    );
+
+    this.anchorLength.type = 'text';
+    this.anchorLength.placeholder = 'mis. 3,95';
+
+    const derive = el('button', undefined, 'Hitung kalibrasi');
+    derive.addEventListener('click', () => this.deriveCalibration());
+
+    const deriveRow = el('div', 'row');
+    deriveRow.append(this.anchorSelect, this.anchorLength, derive);
+
+    calibration.append(
+      el('p', 'hint', 'Pilih satu ukuran yang panjang aslinya Anda tahu pasti, lalu isi angkanya:'),
+      deriveRow,
       field('1 satuan model = ... meter', this.calibrationInput),
       field('Satuan yang ditampilkan', this.unitSelect),
     );
@@ -146,17 +183,25 @@ export class EditorUI {
     const fillAll = el('button', 'primary', 'Isi semua angka dari kalibrasi');
     fillAll.addEventListener('click', () => this.fillAllValues());
     calibration.append(fillAll);
-    calibration.append(
-      el(
-        'p',
-        'hint',
-        'Ukur satu jarak yang Anda tahu pasti, lalu isi kalibrasinya. Angka ukuran lain ikut terhitung sendiri.',
-      ),
-    );
 
     // --- titik ---
     const points = el('section');
-    points.append(el('h2', undefined, 'Titik'), this.pointList);
+    const selectRow = el('div', 'row');
+
+    const selectAll = el('button', undefined, 'Pilih semua');
+    selectAll.addEventListener('click', () => {
+      this.scene.selectMany(this.scene.pointIds);
+      this.renderPoints();
+    });
+
+    const clearSelection = el('button', undefined, 'Kosongkan');
+    clearSelection.addEventListener('click', () => {
+      this.scene.select(null);
+      this.renderPoints();
+    });
+
+    selectRow.append(selectAll, clearSelection);
+    points.append(el('h2', undefined, 'Titik'), selectRow, this.pointList);
 
     // --- ukuran ---
     const measurements = el('section');
@@ -233,10 +278,11 @@ export class EditorUI {
     this.pointList.replaceChildren();
     this.coordInputs.clear();
     const points = this.scene.getPoints();
+    const selected = this.scene.selectedIds;
 
     for (const point of points) {
       const row = el('div', 'item point');
-      if (point.id === this.scene.selected) row.classList.add('is-active');
+      if (selected.includes(point.id)) row.classList.add('is-active');
 
       const head = el('div', 'row tight');
       const name = el('input', 'field id');
@@ -248,9 +294,11 @@ export class EditorUI {
         }
       });
 
-      const pick = el('button', undefined, 'Pilih');
-      pick.addEventListener('click', () => {
-        this.scene.select(point.id);
+      // Shift bekerja sama di daftar seperti di viewport, jadi titik yang
+      // saling menutupi di layar tetap bisa dipilih bersama lewat sini.
+      const pick = el('button', undefined, selected.includes(point.id) ? 'Terpilih' : 'Pilih');
+      pick.addEventListener('click', (event) => {
+        this.scene.select(point.id, event.shiftKey);
         this.renderPoints();
       });
 
@@ -298,6 +346,18 @@ export class EditorUI {
     this.measurementList.replaceChildren();
     const unit = this.unitSelect.value;
     const factor = unit === 'cm' ? this.metersPerUnit * 100 : this.metersPerUnit;
+
+    const previousAnchor = this.anchorSelect.value;
+    this.anchorSelect.replaceChildren();
+    for (const measurement of this.scene.getMeasurements()) {
+      if (measurement.from === measurement.to) continue;
+      const option = el('option', undefined, `${measurement.from}-${measurement.to}`);
+      option.value = measurement.id;
+      this.anchorSelect.append(option);
+    }
+    if (this.scene.getMeasurements().some((m) => m.id === previousAnchor)) {
+      this.anchorSelect.value = previousAnchor;
+    }
 
     for (const measurement of this.scene.getMeasurements()) {
       const row = el('div', 'item');
@@ -372,9 +432,61 @@ export class EditorUI {
     this.scene.setMeasurements(list);
   }
 
+  /**
+   * Menurunkan kalibrasi dari satu ukuran yang panjang aslinya sudah pasti.
+   *
+   * Ini jalan yang seharusnya dipakai, bukan mengetik angka kalibrasi
+   * langsung: nilainya tidak bisa ditebak dari melihat model, dan salah
+   * ketik satu digit di situ menggeser semua ukuran sekaligus.
+   */
+  private deriveCalibration(): void {
+    const measurement = this.scene
+      .getMeasurements()
+      .find((m) => m.id === this.anchorSelect.value);
+    if (!measurement) {
+      this.status.textContent = 'Belum ada ukuran yang bisa dijadikan acuan.';
+      return;
+    }
+
+    const typed = Number(this.anchorLength.value.replace(',', '.'));
+    if (!Number.isFinite(typed) || typed <= 0) {
+      this.status.textContent = `Isi dulu panjang asli ${measurement.from}-${measurement.to} dalam ${this.unitSelect.value}.`;
+      return;
+    }
+
+    const span = this.scene.distance(measurement.from, measurement.to);
+    if (span < 1e-6) {
+      this.status.textContent = 'Kedua titik ukuran itu berimpit, jaraknya nol.';
+      return;
+    }
+
+    const meters = this.unitSelect.value === 'cm' ? typed / 100 : typed;
+    this.calibrationInput.value = String(Number((meters / span).toFixed(4)));
+    this.renderMeasurements();
+    this.status.textContent = `Kalibrasi dari ${measurement.from}-${measurement.to}: 1 satuan model = ${this.calibrationInput.value} m.`;
+  }
+
   private fillAllValues(): void {
     const unit = this.unitSelect.value;
     const factor = unit === 'cm' ? this.metersPerUnit * 100 : this.metersPerUnit;
+
+    // Kalibrasi yang keliru baru ketahuan jauh di hilir — angkanya sudah
+    // terisi, terunduh, dan terkirim. Ukuran terpanjang yang keluar dari
+    // kalibrasi ini diperiksa dulu terhadap batas yang masuk akal untuk
+    // benda yang bisa dipandang lewat kartu penanda.
+    const spans = this.scene
+      .getMeasurements()
+      .filter((m) => m.from !== m.to)
+      .map((m) => this.scene.distance(m.from, m.to) * this.metersPerUnit);
+    const longest = Math.max(0, ...spans);
+
+    if (longest > 500 || (longest > 0 && longest < 0.05)) {
+      this.status.textContent =
+        `Dibatalkan: dengan kalibrasi ${this.metersPerUnit}, ukuran terpanjang jadi ` +
+        `${longest.toLocaleString('id-ID', { maximumFractionDigits: 2 })} m. ` +
+        'Hitung kalibrasinya dari ukuran yang Anda tahu pasti.';
+      return;
+    }
 
     this.scene.setMeasurements(
       this.scene.getMeasurements().map((m) => {

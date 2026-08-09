@@ -11,6 +11,14 @@ const LINE_COLOR = 0xff3000;
 
 export type EditorMode = 'pilih' | 'tambah';
 
+/**
+ * Sudut pandang tetap. Sumbu model dipandang dari enam arah baku supaya
+ * susunan titik bisa diperiksa satu bidang pada satu waktu — dari sudut
+ * bebas, titik yang meleset ke dalam atau ke luar model sulit dibedakan
+ * dari titik yang tepat.
+ */
+export type EditorView = 'perspektif' | 'atas' | 'depan' | 'belakang' | 'kiri' | 'kanan';
+
 export interface EditorEvents {
   /** Titik ditambah, dihapus, atau diganti namanya — daftar perlu disusun ulang. */
   onPointsChanged: () => void;
@@ -20,7 +28,7 @@ export interface EditorEvents {
    * daftar akan merebut fokus dari kotak isian yang sedang diketik.
    */
   onPointMoved: () => void;
-  onSelectionChanged: (pointId: string | null) => void;
+  onSelectionChanged: (pointIds: string[]) => void;
 }
 
 interface EditorPoint {
@@ -63,8 +71,19 @@ export class EditorScene {
   private model: THREE.Object3D | null = null;
   private points: EditorPoint[] = [];
   private measurements: MeasurementDef[] = [];
-  private selectedId: string | null = null;
+  private selection: string[] = [];
   private pointerDownAt = { x: 0, y: 0 };
+
+  /**
+   * Gizmo dipasang ke benda bantu ini, bukan langsung ke salah satu titik.
+   *
+   * Dengan begitu satu dan banyak titik ditangani dengan jalur yang sama:
+   * tiap titik menyimpan jaraknya sendiri terhadap benda bantu, lalu ikut
+   * ke mana pun benda bantu digeser. Kalau gizmo dipasang ke satu titik,
+   * titik-titik lain tidak punya apa pun untuk diikuti.
+   */
+  private readonly dragProxy = new THREE.Object3D();
+  private readonly dragOffsets = new Map<string, THREE.Vector3>();
 
   constructor(container: HTMLElement, events: EditorEvents) {
     this.container = container;
@@ -86,7 +105,7 @@ export class EditorScene {
     sun.position.set(3, 5, 2);
     this.scene.add(sun);
     this.scene.add(new THREE.GridHelper(20, 20, 0x334466, 0x1a2340));
-    this.scene.add(this.pointRoot, this.lineRoot);
+    this.scene.add(this.pointRoot, this.lineRoot, this.dragProxy);
 
     // Ukuran titik dibuat kecil dan tetap; skala model bisa sangat berbeda
     // antar objek, jadi ukurannya disesuaikan saat model dimuat.
@@ -103,6 +122,10 @@ export class EditorScene {
       this.orbit.enabled = !event.value;
     });
     this.gizmo.addEventListener('objectChange', () => {
+      for (const [id, offset] of this.dragOffsets) {
+        const point = this.points.find((p) => p.id === id);
+        point?.mesh.position.copy(this.dragProxy.position).add(offset);
+      }
       this.refreshLines();
       this.events.onPointMoved();
     });
@@ -149,24 +172,51 @@ export class EditorScene {
   }
 
   /**
-   * Memandang model tepat dari atas, seperti kamera HP yang diarahkan tegak
-   * lurus ke kartu penanda.
+   * Memindahkan kamera ke salah satu sudut pandang baku.
    *
-   * Tanpa ini, editor dan tampilan AR sulit dibandingkan: susunan titiknya
-   * sama persis, tapi sudut pandang yang berbeda membuatnya terlihat lain.
+   * Jaraknya dihitung dari bidang yang benar-benar terlihat pada arah itu,
+   * bukan dari satu angka pukul rata: dipandang dari depan yang menentukan
+   * adalah lebar dan tinggi, dari atas lebar dan kedalaman. Memakai ukuran
+   * yang sama untuk semua arah membuat objek pipih tampak jauh sekali dari
+   * satu sisi dan terpotong dari sisi lain.
    */
-  topView(): void {
+  setView(view: EditorView): void {
     const box = new THREE.Box3().setFromObject(this.model ?? this.pointRoot);
     if (box.isEmpty()) return;
 
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    const distance = Math.max(size.x, size.z) * 1.6;
 
+    // Arah pandang, dan dua sisi kotak yang melintang terhadap arah itu.
+    const setups: Record<EditorView, { dir: THREE.Vector3; span: [number, number] }> = {
+      // Tegak lurus dari atas, seperti kamera HP yang diarahkan ke kartu.
+      // Geseran kecil pada z menghindari arah pandang yang sejajar sumbu
+      // atas kamera — pada titik itu arah "atas" layar tidak tertentu.
+      atas: { dir: new THREE.Vector3(0, 1, 0.0001), span: [size.x, size.z] },
+      depan: { dir: new THREE.Vector3(0, 0, 1), span: [size.x, size.y] },
+      belakang: { dir: new THREE.Vector3(0, 0, -1), span: [size.x, size.y] },
+      kanan: { dir: new THREE.Vector3(1, 0, 0), span: [size.z, size.y] },
+      kiri: { dir: new THREE.Vector3(-1, 0, 0), span: [size.z, size.y] },
+      perspektif: {
+        dir: new THREE.Vector3(0.6, 0.45, 0.8),
+        span: [Math.max(size.x, size.z), Math.max(size.y, size.z)],
+      },
+    };
+
+    const { dir, span } = setups[view];
     this.orbit.target.copy(center);
-    this.camera.position.set(center.x, center.y + distance, center.z + 0.001);
-    this.camera.up.set(0, 1, 0);
+    this.camera.position.copy(center).addScaledVector(dir.normalize(), this.fitDistance(...span));
     this.orbit.update();
+  }
+
+  /** Jarak kamera terkecil yang masih memuat sebuah bidang selebar w dan setinggi h. */
+  private fitDistance(width: number, height: number): number {
+    const vertical = THREE.MathUtils.degToRad(this.camera.fov);
+    const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * this.camera.aspect);
+    const byHeight = height / 2 / Math.tan(vertical / 2);
+    const byWidth = width / 2 / Math.tan(horizontal / 2);
+    // Sisa 20% supaya titik di tepi tidak menempel di pinggir layar.
+    return Math.max(byHeight, byWidth, 0.001) * 1.2;
   }
 
   /**
@@ -204,6 +254,7 @@ export class EditorScene {
       point.mesh.position.sub(from).multiplyScalar(scale).add(to);
     }
 
+    this.syncGizmo();
     this.refreshLines();
     this.events.onPointMoved();
     return true;
@@ -213,8 +264,9 @@ export class EditorScene {
     return this.points.map((p) => p.id);
   }
 
-  get selected(): string | null {
-    return this.selectedId;
+  /** Titik-titik yang sedang dipilih; semuanya ikut bergerak bersama gizmo. */
+  get selectedIds(): readonly string[] {
+    return this.selection;
   }
 
   getPoints(): { id: string; position: Vec3 }[] {
@@ -243,6 +295,7 @@ export class EditorScene {
     if (!point) return;
 
     point.mesh.position.set(...position);
+    this.syncGizmo();
     this.refreshLines();
     this.events.onPointMoved();
   }
@@ -255,17 +308,61 @@ export class EditorScene {
     return from.mesh.position.distanceTo(to.mesh.position);
   }
 
-  select(id: string | null): void {
+  /**
+   * `additive` (Shift) menambah atau membuang satu titik dari pilihan yang
+   * sudah ada, bukan menggantinya. Menyeret delapan sudut sekaligus jauh
+   * lebih cepat daripada delapan kali pilih-seret, dan yang lebih penting:
+   * jarak antar titiknya dijamin tidak berubah.
+   */
+  select(id: string | null, additive = false): void {
+    if (id === null) this.selection = [];
+    else if (!additive) this.selection = [id];
+    else if (this.selection.includes(id)) this.selection = this.selection.filter((x) => x !== id);
+    else this.selection = [...this.selection, id];
+
+    this.applySelection();
+  }
+
+  selectMany(ids: string[]): void {
+    const known = new Set(this.pointIds);
+    this.selection = ids.filter((id) => known.has(id));
+    this.applySelection();
+  }
+
+  private applySelection(): void {
+    const chosen = this.points.filter((p) => this.selection.includes(p.id));
     for (const point of this.points) {
-      point.mesh.material = point.id === id ? this.selectedMaterial : this.pointMaterial;
+      point.mesh.material = this.selection.includes(point.id)
+        ? this.selectedMaterial
+        : this.pointMaterial;
     }
 
-    const target = this.points.find((p) => p.id === id);
-    if (target) this.gizmo.attach(target.mesh);
-    else this.gizmo.detach();
+    this.syncGizmo(chosen);
+    this.events.onSelectionChanged([...this.selection]);
+  }
 
-    this.selectedId = id;
-    this.events.onSelectionChanged(id);
+  /**
+   * Menaruh benda bantu di titik tengah pilihan dan mencatat jarak tiap
+   * titik terhadapnya. Harus diulang setiap kali titik berpindah karena
+   * sebab lain — koordinat yang diketik, atau sebaran ulang — kalau tidak,
+   * seretan berikutnya akan melompat balik ke susunan yang lama.
+   */
+  private syncGizmo(chosen = this.points.filter((p) => this.selection.includes(p.id))): void {
+    this.dragOffsets.clear();
+    if (chosen.length === 0) {
+      this.gizmo.detach();
+      return;
+    }
+
+    const center = new THREE.Vector3();
+    for (const point of chosen) center.add(point.mesh.position);
+    center.divideScalar(chosen.length);
+
+    this.dragProxy.position.copy(center);
+    for (const point of chosen) {
+      this.dragOffsets.set(point.id, point.mesh.position.clone().sub(center));
+    }
+    this.gizmo.attach(this.dragProxy);
   }
 
   rename(oldId: string, newId: string): boolean {
@@ -280,7 +377,12 @@ export class EditorScene {
       if (m.from === oldId) m.from = newId;
       if (m.to === oldId) m.to = newId;
     }
-    if (this.selectedId === oldId) this.selectedId = newId;
+    this.selection = this.selection.map((x) => (x === oldId ? newId : x));
+    const moved = this.dragOffsets.get(oldId);
+    if (moved) {
+      this.dragOffsets.delete(oldId);
+      this.dragOffsets.set(newId, moved);
+    }
 
     this.refreshLines();
     this.events.onPointsChanged();
@@ -300,7 +402,10 @@ export class EditorScene {
     // jadi ikut dibuang.
     this.measurements = this.measurements.filter((m) => m.from !== id && m.to !== id);
 
-    if (this.selectedId === id) this.select(null);
+    if (this.selection.includes(id)) {
+      this.selection = this.selection.filter((x) => x !== id);
+      this.applySelection();
+    }
     this.refreshLines();
     this.events.onPointsChanged();
   }
@@ -377,12 +482,15 @@ export class EditorScene {
     const onPoint = this.raycaster.intersectObjects(this.pointRoot.children, false);
     if (onPoint.length > 0) {
       const hit = this.points.find((p) => p.mesh === onPoint[0].object);
-      if (hit) this.select(hit.id);
+      if (hit) this.select(hit.id, event.shiftKey);
       return;
     }
 
+    // Shift di ruang kosong tidak mengosongkan pilihan: menahan Shift sambil
+    // memilih beberapa titik gampang meleset, dan kehilangan seluruh pilihan
+    // karena satu klik luput itu menjengkelkan.
     if (this.mode !== 'tambah' || !this.model) {
-      this.select(null);
+      if (!event.shiftKey) this.select(null);
       return;
     }
 

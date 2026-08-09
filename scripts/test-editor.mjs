@@ -102,6 +102,138 @@ try {
     `${beforeSpread} -> ${afterSpread}`,
   );
 
+  // --- sudut pandang ---
+  // Tombolnya harus benar-benar memindahkan kamera, bukan sekadar ada.
+  const viewportBox = await page.locator('#viewport').boundingBox();
+  const shot = () => page.screenshot({ clip: viewportBox });
+
+  const bebas = await shot();
+  await page.click('.grid button:text-is("Atas")');
+  await page.waitForTimeout(400);
+  const atas = await shot();
+  check(!bebas.equals(atas), 'tombol Atas memindahkan kamera');
+
+  await page.click('.grid button:text-is("Depan")');
+  await page.waitForTimeout(400);
+  const depan = await shot();
+  check(!atas.equals(depan), 'tombol Depan memberi sudut pandang lain');
+
+  // --- memilih beberapa titik sekaligus ---
+  const axisValue = async (row, axis = 0) =>
+    Number(await page.locator('.item.point').nth(row).locator('.field.axis').nth(axis).inputValue());
+
+  const pickButton = (row) => page.locator('.item.point').nth(row).locator('button:text-matches("Pilih|Terpilih")');
+
+  await pickButton(0).click();
+  await pickButton(1).click({ modifiers: ['Shift'] });
+  const active = await page.locator('.item.point.is-active').count();
+  check(active === 2, 'Shift+klik memilih dua titik sekaligus', `${active} titik aktif`);
+
+  // Titik yang dipilih harus bergerak bersama dengan jarak antar titik tetap.
+  // Itu inti gunanya: menyeret satu per satu selalu menggeser susunannya.
+  const labelCenter = async (id) =>
+    page.evaluate((wanted) => {
+      const node = [...document.querySelectorAll('.editor-point-label')].find(
+        (e) => e.textContent === wanted,
+      );
+      if (!node) return null;
+      const box = node.getBoundingClientRect();
+      return { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+    }, id);
+
+  const idOf = async (row) =>
+    page.locator('.item.point').nth(row).locator('.field.id').inputValue();
+  const [firstId, secondId] = [await idOf(0), await idOf(1)];
+
+  // Pegangan gizmo ada tepat di titik tengah pilihan, sedangkan label
+  // digantung sedikit di atas titiknya — dan jarak "sedikit" itu bergantung
+  // pada besar model. Daripada menebaknya, beberapa jarak dicoba sampai
+  // titiknya benar-benar bergerak.
+  let shifts = [0, 0];
+  for (const drop of [12, 8, 16, 4, 20, 0]) {
+    // Seretan yang meleset ikut memutar kamera, jadi sudut pandangnya
+    // dikembalikan dulu sebelum posisi label dibaca ulang.
+    await page.click('.grid button:text-is("Depan")');
+    await page.waitForTimeout(350);
+
+    const [pa, pb] = [await labelCenter(firstId), await labelCenter(secondId)];
+    if (!pa || !pb) break;
+
+    const from = { x: (pa.x + pb.x) / 2, y: (pa.y + pb.y) / 2 + drop };
+    const before = [await axisValue(0), await axisValue(1)];
+
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(from.x + 90, from.y, { steps: 12 });
+    await page.mouse.up();
+    await page.waitForTimeout(300);
+
+    const after = [await axisValue(0), await axisValue(1)];
+    shifts = [after[0] - before[0], after[1] - before[1]];
+    if (Math.abs(shifts[0]) > 0.01) break;
+  }
+
+  check(
+    Math.abs(shifts[0]) > 0.01,
+    'menyeret gizmo memindahkan titik terpilih',
+    `geser ${shifts[0].toFixed(3)}`,
+  );
+  check(
+    Math.abs(shifts[0]) > 0.01 && Math.abs(shifts[0] - shifts[1]) < 0.01,
+    'kedua titik bergeser sama jauh — susunannya tidak berubah',
+    `${shifts[0].toFixed(3)} vs ${shifts[1].toFixed(3)}`,
+  );
+
+  await page.click('button:text-is("Kosongkan")');
+  check(
+    (await page.locator('.item.point.is-active').count()) === 0,
+    'tombol Kosongkan melepas semua pilihan',
+  );
+  await page.click('button:text-is("Pilih semua")');
+  const all = await page.locator('.item.point.is-active').count();
+  check(all === (await pointCount()), 'tombol Pilih semua memilih seluruh titik', `${all} titik`);
+  await page.click('button:text-is("Kosongkan")');
+
+  // --- kalibrasi ---
+  // Angka kalibrasi tidak bisa ditebak dari melihat model. Diturunkan dari
+  // satu ukuran yang panjang aslinya diketahui, hasilnya harus tepat.
+  await page.selectOption('#panel section select.field >> nth=0', { index: 0 });
+  const anchorPair = await page.locator('#panel section select.field').first().inputValue();
+
+  await page.fill('input[placeholder="mis. 3,95"]', '10');
+  await page.click('button:text-is("Hitung kalibrasi")');
+  await page.waitForTimeout(200);
+  const derived = Number(await page.locator('#panel .field-row input.field').first().inputValue());
+
+  // Kalau kalibrasinya benar, ukuran acuan itu sendiri kini harus terbaca
+  // tepat 10 — angka yang barusan dimasukkan. Ini memeriksa hitungannya,
+  // bukan sekadar bahwa sebuah angka keluar.
+  const anchorNow = (await page.locator('.list .item .coords').first().textContent()) ?? '';
+  const shown = Number(anchorNow.match(/([\d.]+)\s*\w+$/)?.[1] ?? NaN);
+  check(
+    Math.abs(shown - 10) < 0.02,
+    'kalibrasi terhitung tepat dari ukuran acuan',
+    `${anchorPair} diisi 10 -> terbaca ${shown} (${derived} m/satuan)`,
+  );
+
+  // Kalibrasi ngawur harus ditolak, bukan diam-diam menulis angka raksasa.
+  await page.fill('#panel .field-row input.field >> nth=0', '10000');
+  await page.click('button:text-is("Isi semua angka dari kalibrasi")');
+  await page.waitForTimeout(200);
+  const refused = (await page.locator('.status').textContent()) ?? '';
+  check(
+    /Dibatalkan/.test(refused),
+    'kalibrasi ngawur ditolak sebelum menulis angka',
+    refused.slice(0, 60),
+  );
+
+  // Dan kalibrasi yang wajar tetap boleh jalan.
+  await page.fill('#panel .field-row input.field >> nth=0', String(derived));
+  await page.click('button:text-is("Isi semua angka dari kalibrasi")');
+  await page.waitForTimeout(200);
+  const accepted = (await page.locator('.status').textContent()) ?? '';
+  check(!/Dibatalkan/.test(accepted), 'kalibrasi wajar tetap diterima', accepted.slice(0, 60));
+
   // Berpindah objek tidak boleh membuang suntingan objek sebelumnya.
   // Sebelum diperbaiki, suntingan hilang diam-diam dan baru ketahuan setelah
   // berkasnya diunduh — kerja yang sudah dilakukan lenyap tanpa peringatan.

@@ -139,6 +139,14 @@ button.toggle.is-active {
   min-width: 0;
 }
 
+/* Tombol sudut pandang: tiga sekolom supaya keenamnya muat dua baris. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
 .status,
 .hint {
   margin: 0.5rem 0 0;
