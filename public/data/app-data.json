@@ -4,8 +4,8 @@
   "bloom": {
     "enabled": true,
     "strength": 0.7,
-    "radius": 0.5,
-    "threshold": 0.55
+    "radius": 0.25,
+    "threshold": 0.65
   },
   "defaultStyle": {
     "lineColor": "#14E6FF",
@@ -15,7 +15,8 @@
     "showArrows": true,
     "arrowLength": 0.008,
     "arrowHalfWidth": 0.003,
-    "worldUnits": false
+    "worldUnits": false,
+    "glow": 3.5
   },
   "objects": [
     {
@@ -222,7 +223,8 @@
         "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
-        "arrowHalfWidth": 0.02
+        "arrowHalfWidth": 0.02,
+        "glow": 3.5
       },
       "fit": "marker-width",
       "metersPerUnit": 0.4447
@@ -518,7 +520,8 @@
         "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
-        "arrowHalfWidth": 0.02
+        "arrowHalfWidth": 0.02,
+        "glow": 3.5
       },
       "fit": "marker-width",
       "metersPerUnit": 3.809
@@ -683,7 +686,8 @@
         "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
-        "arrowHalfWidth": 0.02
+        "arrowHalfWidth": 0.02,
+        "glow": 3.5
       },
       "fit": "marker-width",
       "metersPerUnit": 1.9783
@@ -696,39 +700,39 @@
       "points": [
         {
           "id": "A",
-          "position": [0.93341, -0.92814, -1.41474]
+          "position": [0.5325, -0.32979, -0.40798]
         },
         {
           "id": "B",
-          "position": [0.93131, -0.92814, 0.67202]
+          "position": [0.5304, -0.32979, 0.44993]
         },
         {
           "id": "C",
-          "position": [-0.9625, -0.92814, 0.65105]
+          "position": [-0.56216, -0.32979, 0.42896]
         },
         {
           "id": "D",
-          "position": [-0.98348, -0.92814, -1.40635]
+          "position": [-0.58314, -0.32979, -0.39959]
         },
         {
           "id": "E",
-          "position": [0.93341, 1.35786, -1.41474]
+          "position": [0.5325, 0.91196, -0.40116]
         },
         {
           "id": "F",
-          "position": [0.93131, 1.35786, 0.67202]
+          "position": [0.5304, 0.91196, 0.45676]
         },
         {
           "id": "G",
-          "position": [-0.9625, 1.35786, 0.65105]
+          "position": [-0.56216, 0.91196, 0.42896]
         },
         {
           "id": "H",
-          "position": [-0.98348, 1.35786, -1.40635]
+          "position": [-0.58314, 0.91196, -0.39277]
         },
         {
           "id": "P",
-          "position": [-0.0481, 1.35786, -1.24486]
+          "position": [-0.0481, 0.49739, -0.30299]
         }
       ],
       "measurements": [
@@ -736,7 +740,7 @@
           "id": "AB",
           "from": "A",
           "to": "B",
-          "value": "3,40",
+          "value": "2,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -745,7 +749,7 @@
           "id": "BC",
           "from": "B",
           "to": "C",
-          "value": "3,09",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -754,7 +758,7 @@
           "id": "AE",
           "from": "A",
           "to": "E",
-          "value": "3,72",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -763,7 +767,7 @@
           "id": "C",
           "from": "C",
           "to": "D",
-          "value": "3,35",
+          "value": "2,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -772,7 +776,7 @@
           "id": "DA",
           "from": "D",
           "to": "A",
-          "value": "3,12",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -781,7 +785,7 @@
           "id": "BF",
           "from": "B",
           "to": "F",
-          "value": "3,72",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -790,7 +794,7 @@
           "id": "CG",
           "from": "C",
           "to": "G",
-          "value": "3,72",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -799,7 +803,7 @@
           "id": "DH",
           "from": "D",
           "to": "H",
-          "value": "3,72",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -808,7 +812,7 @@
           "id": "EF",
           "from": "E",
           "to": "F",
-          "value": "3,40",
+          "value": "2,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -817,7 +821,7 @@
           "id": "GH",
           "from": "G",
           "to": "H",
-          "value": "3,35",
+          "value": "2,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -826,7 +830,7 @@
           "id": "GF",
           "from": "G",
           "to": "F",
-          "value": "3,09",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -835,7 +839,7 @@
           "id": "HE",
           "from": "H",
           "to": "E",
-          "value": "3,12",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
           "visibleOnStart": true
@@ -855,12 +859,12 @@
         "labelFontSize": 10,
         "showArrows": false,
         "arrowLength": 0.02,
-        "arrowHalfWidth": 0.02
+        "arrowHalfWidth": 0.02,
+        "glow": 3.5
       },
       "fit": "marker-width",
-      "draft": true,
-      "measurementTolerance": 0.15,
-      "metersPerUnit": 1.6293
+      "measurementTolerance": 0.09,
+      "metersPerUnit": 2.89
     }
   ]
 }

@@ -3,6 +3,7 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import type { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { Label } from './Label';
+import { glowColor } from './glow';
 import type { MeasurementDef, MeasurementStyle } from '../data/types';
 
 /**
@@ -51,9 +52,9 @@ export class LineVisual {
           style.arrowLength,
           12,
         );
-        this.arrowMaterial = new THREE.MeshBasicMaterial({
-          color: new THREE.Color(style.lineColor),
-        });
+        // Panah ikut menyala bersama garisnya, kalau tidak ujung garis
+        // justru terlihat padam di tengah batang yang berpendar.
+        this.arrowMaterial = new THREE.MeshBasicMaterial({ color: glowColor(style) });
 
         this.root.add(this.buildArrow(to, from));
         this.root.add(this.buildArrow(from, to));

@@ -33,6 +33,18 @@ export interface MeasurementStyle {
    * true = `lineWidth` dalam satuan dunia, sesuai teks docs.
    */
   worldUnits?: boolean;
+  /**
+   * Pengali kecerahan warna garis, di atas 1 berarti menyala.
+   *
+   * Bloom hanya menangkap piksel yang kecerahannya melewati ambang. Merah
+   * #FF3000 kecerahannya 0,35, di bawah ambang 0,55, jadi garisnya tidak
+   * pernah ikut menyala. Mengalikan warnanya menaikkannya melewati ambang
+   * tanpa menurunkan ambang itu sendiri — kalau ambangnya yang diturunkan,
+   * modelnya ikut menyala dan seluruh layar tercuci.
+   *
+   * 1 (bawaan) = tanpa glow.
+   */
+  glow?: number;
 }
 
 /**

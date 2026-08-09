@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineVisual } from './LineVisual';
+import { glowColor } from './glow';
 import type { MeasurementStyle, ObjectData } from '../data/types';
 
 /** Lama transisi transparansi model, dalam detik. */
@@ -49,11 +50,14 @@ export class MeasurementController {
     this.model = model;
 
     this.material = new LineMaterial({
-      color: new THREE.Color(style.lineColor).getHex(),
       linewidth: style.lineWidth,
       worldUnits: style.worldUnits ?? false,
       dashed: false,
     });
+    // Diset lewat properti, bukan lewat parameter konstruktor: getHex()
+    // memampatkan tiap kanal ke 0-255, dan justru nilai di atas 1 itulah
+    // yang membuat bloom mau menangkap garisnya.
+    this.material.color.copy(glowColor(style));
     this.material.resolution.set(window.innerWidth, window.innerHeight);
 
     parent.add(this.root);
