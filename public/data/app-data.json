@@ -237,7 +237,7 @@
       "points": [
         {
           "id": "A",
-          "position": [2.7558, 0.50123, 2.34663]
+          "position": [-2.15182, 0.50123, 2.34663]
         },
         {
           "id": "B",
@@ -245,63 +245,63 @@
         },
         {
           "id": "C",
-          "position": [-2.21395, 0.50123, 2.34663]
+          "position": [2.6895, 0.50123, 2.34663]
         },
         {
           "id": "D",
-          "position": [-2.21395, 0.50123, -2.2627]
+          "position": [2.6895, 0.50123, -2.29978]
         },
         {
           "id": "E",
-          "position": [2.72752, 0.50123, -2.26683]
+          "position": [-2.15182, 0.50123, -2.26683]
         },
         {
           "id": "F",
-          "position": [2.12887, 0.99191, 1.34223]
+          "position": [-1.50755, 0.99191, 1.34223]
         },
         {
           "id": "G",
-          "position": [1.06515, 0.99191, 1.35173]
+          "position": [-0.37421, 0.99191, 1.35173]
         },
         {
           "id": "H",
-          "position": [1.0494, 0.99191, -1.24822]
+          "position": [-0.43931, 0.99191, -1.24822]
         },
         {
           "id": "I",
-          "position": [2.14631, 0.99191, -1.24121]
+          "position": [-1.48237, 0.99191, -1.24121]
         },
         {
           "id": "J",
-          "position": [1.60143, 1.29475, 0.99494]
+          "position": [-1.0293, 1.29475, 0.99494]
         },
         {
           "id": "K",
-          "position": [1.62899, 1.29475, -0.97011]
+          "position": [-1.0251, 1.29475, -0.97011]
         },
         {
           "id": "L",
-          "position": [-0.4728, 0.99191, 1.37314]
+          "position": [1.24238, 1.11373, 1.1718]
         },
         {
           "id": "M",
-          "position": [-1.48724, 0.99191, 1.36058]
+          "position": [2.0325, 1.11373, 1.14399]
         },
         {
           "id": "N",
-          "position": [-1.47813, 0.99191, -1.39936]
+          "position": [1.97313, 1.11373, -1.11993]
         },
         {
           "id": "O",
-          "position": [-0.37835, 0.99191, -1.43782]
+          "position": [1.19489, 1.11373, -1.14473]
         },
         {
           "id": "P",
-          "position": [-1.05035, 1.29475, -1.0149]
+          "position": [1.57697, 1.41657, -0.81709]
         },
         {
           "id": "Q",
-          "position": [-1.04354, 1.29475, 1.03513]
+          "position": [1.60647, 1.41657, 0.76095]
         }
       ],
       "measurements": [
@@ -309,208 +309,215 @@
           "id": "AB",
           "from": "A",
           "to": "B",
-          "value": "7,79",
+          "value": "8",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "BC",
           "from": "B",
           "to": "C",
-          "value": "9,00",
+          "value": "9",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "AE",
           "from": "A",
           "to": "E",
-          "value": "17,15",
+          "value": "17",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "ED",
           "from": "E",
           "to": "D",
-          "value": "17,19",
+          "value": "17",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "DC",
           "from": "D",
           "to": "C",
-          "value": "17,13",
+          "value": "17",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "FG",
           "from": "F",
           "to": "G",
-          "value": "4,15",
+          "value": "2,6",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "GH",
           "from": "G",
           "to": "H",
-          "value": "6,09",
+          "value": "39,5",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "JK",
           "from": "J",
           "to": "K",
-          "value": "1,96",
+          "value": "3",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "HI",
           "from": "H",
           "to": "I",
-          "value": "3,63",
+          "value": "2,6",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "FI",
           "from": "F",
           "to": "I",
-          "value": "6,24",
+          "value": "39,5",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "JF",
           "from": "J",
           "to": "F",
-          "value": "3,16",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "JG",
           "from": "J",
           "to": "G",
-          "value": "2,64",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "KI",
           "from": "K",
           "to": "I",
-          "value": "2,98",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "KH",
           "from": "K",
           "to": "H",
-          "value": "2,72",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "LM",
           "from": "L",
           "to": "M",
-          "value": "2,96",
+          "value": "2,6",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "MN",
           "from": "M",
           "to": "N",
-          "value": "6,39",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "PQ",
           "from": "P",
           "to": "Q",
-          "value": "3,32",
+          "value": "2",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "NO",
           "from": "N",
           "to": "O",
-          "value": "2,86",
+          "value": "2,6",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "OL",
           "from": "O",
           "to": "L",
-          "value": "6,58",
+          "value": "3,4",
           "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "PN",
           "from": "P",
           "to": "N",
-          "value": "1,95",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "QL",
           "from": "Q",
           "to": "L",
-          "value": "2,19",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "QM",
           "from": "Q",
           "to": "M",
-          "value": "2,35",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         },
         {
           "id": "PO",
           "from": "P",
           "to": "O",
-          "value": "2,12",
-          "unit": "m",
           "showPointPair": true,
-          "visibleOnStart": true
+          "visibleOnStart": true,
+          "category": "m"
         }
       ],
       "style": {
