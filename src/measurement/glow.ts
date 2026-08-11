@@ -11,6 +11,6 @@ import type { MeasurementStyle } from '../data/types';
  */
 export function glowColor(style: MeasurementStyle): THREE.Color {
   const color = new THREE.Color(style.lineColor);
-  const amount = style.glow ?? 1;
-  return amount > 1 ? color.multiplyScalar(amount) : color;
+  const amount = style.glow ?? 0.5;
+  return amount > 0.5 ? color.multiplyScalar(amount) : color;
 }

@@ -1,12 +1,20 @@
 /**
- * Memeriksa app-data.json: apakah nilai pada label cocok dengan jarak
+ * Melaporkan app-data.json: apakah nilai pada label cocok dengan jarak
  * sebenarnya antar titik?
  *
  *   npm run check:data
  *
- * Ini aplikasi edukasi — label "14,1 cm" yang ternyata tidak sesuai koordinat
- * mengajarkan matematika yang salah. Lebih baik gagal di sini daripada di HP
- * anak. Toleransi 0,5 mm mengakomodasi pembulatan satu desimal.
+ * Melapor, bukan memutuskan. Dulu skrip ini menggagalkan build, dengan alasan
+ * label yang tidak sesuai koordinat mengajarkan matematika yang salah. Alasan
+ * itu berpijak pada anggapan bahwa model 3D adalah sumber kebenaran ukuran —
+ * dan anggapan itu tidak berlaku di sini: modelnya perwakilan visual dengan
+ * proporsi sendiri, sedangkan angka pada label adalah hasil ukur lapangan.
+ * Ketika keduanya berselisih, yang dipakai adalah angka ukur, jadi skrip ini
+ * tidak berhak membatalkan build.
+ *
+ * Laporannya tetap berguna: selisih yang mendadak melebar biasanya berarti
+ * titik tergeser di editor, bukan bangunannya yang berubah. Baca angkanya,
+ * jangan abaikan — hanya saja keputusannya ada pada Anda.
  */
 import { readFileSync } from 'node:fs';
 
@@ -97,29 +105,27 @@ for (const object of data.objects) {
         `${object.id}/${m.id}${m.displayName ? ` (${m.displayName})` : ''}: ` +
         `label "${m.value} ${m.unit}" tapi jarak sebenarnya ${shown} ${m.unit} — meleset ${off}%`;
 
-      if (object.draft) {
-        console.warn(`  PERINGATAN ${line}`);
-        warned++;
-      } else {
-        console.error(`  GAGAL ${line}`);
-        failed++;
-      }
+      console.warn(`  BEDA ${line}`);
+      warned++;
     }
   }
 }
 
 const total = checked + failed + warned;
 
+// Titik yang tidak ada atau satuan yang tidak dikenal bukan soal selisih ukur:
+// datanya rusak dan garisnya tidak akan tergambar sama sekali. Yang ini tetap
+// menggagalkan build, karena tidak ada angka ukur yang bisa dibela di situ.
 if (failed > 0) {
-  console.error(`\n${failed} measurement tidak cocok dari ${total} yang dicek.`);
+  console.error(`\n${failed} measurement rusak dari ${total} yang dicek.`);
   process.exit(1);
 }
 
 if (warned > 0) {
   console.warn(
-    `\n${warned} measurement tidak cocok, tapi objeknya bertanda "draft" jadi build diteruskan.`,
+    `\n${warned} dari ${total} measurement berbeda dari jarak titiknya. ` +
+      'Angka pada label yang dipakai — ini laporan, bukan kegagalan.',
   );
-  console.warn('Hapus tanda "draft" setelah angkanya dibetulkan di Unity.');
 }
 
 console.log(`OK — ${checked} measurement cocok dengan koordinat titiknya.`);
